@@ -1,26 +1,26 @@
-import type { Metadata } from 'next'
-import Image from 'next/image'
-import { buildMetadata } from '@/lib/metadata'
-import PageHero from '@/components/ui/PageHero'
-import SectionTitle from '@/components/ui/SectionTitle'
-import Button from '@/components/ui/Button'
-import { MapPin, Sparkles } from 'lucide-react'
+import type { Metadata } from "next";
+import Image from "next/image";
+import { buildMetadata } from "@/lib/metadata";
+import PageHero from "@/components/ui/PageHero";
+import SectionTitle from "@/components/ui/SectionTitle";
+import Button from "@/components/ui/Button";
+import { MapPin, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = buildMetadata({
-  title: 'About Hitomi',
+  title: "About Hitomi",
   description:
-    'Meet Hitomi Landazabal — bridal makeup artist and wedding hairstylist based in Sapporo, Japan. Specialising in elegant looks for international and Asian brides in Hokkaido.',
-  alternates: { canonical: 'https://hitomils.com/about' },
-})
+    "Meet Hitomi Landazabal — bridal makeup artist and wedding hairstylist based in Sapporo, Japan. Specialising in elegant looks for international and Asian brides in Hokkaido.",
+  alternates: { canonical: "https://hitomils.com/about" },
+});
 
 const specialties = [
-  'Bridal Makeup & Hair',
-  'Asian & Western Features',
-  'Long Hair Styling',
-  'Natural & Glam Looks',
-  'Skin-First Techniques',
-  'International Clients',
-]
+  "Bridal Makeup & Hair",
+  "Asian & Western Features",
+  "Long Hair Styling",
+  "Natural & Glam Looks",
+  "Skin-First Techniques",
+  "International Clients",
+];
 
 export default function AboutPage() {
   return (
@@ -32,9 +32,9 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
           {/* Image */}
           <div className="relative order-2 md:order-1">
-            <div className="relative aspect-[3/4] overflow-hidden">
+            <div className="relative aspect-[3/4] max-h-[420px] md:max-h-none overflow-hidden">
               <Image
-                src="/images/about/portrait.jpg"
+                src="/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg"
                 alt="Hitomi Landazabal, bridal makeup and hair artist, Sapporo Japan"
                 fill
                 className="object-cover object-top"
@@ -50,27 +50,30 @@ export default function AboutPage() {
 
             <div className="mt-8 space-y-5 font-sans text-base text-[#7A7570] leading-relaxed font-light">
               <p>
-                I&apos;m a bridal makeup artist and wedding hairstylist based in beautiful
-                Sapporo, Hokkaido. My passion for beauty began as a love of transformation
-                — the moment when a woman looks in the mirror and feels truly, completely herself.
+                I&apos;m a bridal makeup artist and wedding hairstylist based in
+                beautiful Sapporo, Hokkaido. My passion for beauty began as a
+                love of transformation — the moment when a woman looks in the
+                mirror and feels truly, completely herself.
               </p>
               <p>
-                Over the years, I have had the privilege of working with brides from Japan,
-                Europe, North America, and across Asia. I understand that every woman is
-                unique, and I take time to listen, to understand your vision, and to create
-                a look that honours who you are — not who a trend says you should be.
+                Over the years, I have had the privilege of working with brides
+                from Japan, Europe, North America, and across Asia. I understand
+                that every woman is unique, and I take time to listen, to
+                understand your vision, and to create a look that honours who
+                you are — not who a trend says you should be.
               </p>
               <p>
-                My approach is rooted in skin care and technique. Before any brush touches
-                your face, I ensure your skin is prepared and nourished. I work with
-                professional-grade products chosen for longevity and photography performance,
-                so your look stays flawless from your morning preparations through your
-                final dance.
+                My approach is rooted in skin care and technique. Before any
+                brush touches your face, I ensure your skin is prepared and
+                nourished. I work with professional-grade products chosen for
+                longevity and photography performance, so your look stays
+                flawless from your morning preparations through your final
+                dance.
               </p>
               <p>
-                Whether you envision a soft, dewey natural look or a polished evening
-                glamour, I am here to make your wedding morning as calm, beautiful, and
-                memorable as the ceremony itself.
+                Whether you envision a soft, dewey natural look or a polished
+                evening glamour, I am here to make your wedding morning as calm,
+                beautiful, and memorable as the ceremony itself.
               </p>
             </div>
 
@@ -87,7 +90,11 @@ export default function AboutPage() {
       {/* Specialties */}
       <section className="py-24 md:py-32 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <SectionTitle subtitle="What I Do Best" title="Specialties" centered />
+          <SectionTitle
+            subtitle="What I Do Best"
+            title="Specialties"
+            centered
+          />
 
           <div className="mt-16 grid grid-cols-2 md:grid-cols-3 gap-4">
             {specialties.map((item) => (
@@ -109,17 +116,22 @@ export default function AboutPage() {
           <div>
             <SectionTitle subtitle="Where I Work" title="Sapporo, Hokkaido" />
             <p className="mt-8 font-sans text-base text-[#7A7570] leading-relaxed font-light">
-              Sapporo is one of Japan&apos;s most stunning cities for a destination wedding.
-              From intimate chapel ceremonies in the city to lavish receptions surrounded by
-              Hokkaido&apos;s breathtaking natural landscapes — I am here to be part of your day.
+              Sapporo is one of Japan&apos;s most stunning cities for a
+              destination wedding. From intimate chapel ceremonies in the city
+              to lavish receptions surrounded by Hokkaido&apos;s breathtaking
+              natural landscapes — I am here to be part of your day.
             </p>
             <p className="mt-4 font-sans text-base text-[#7A7570] leading-relaxed font-light">
-              I travel throughout Hokkaido for weddings. For events further afield across
-              Japan, please reach out — I would love to discuss your plans.
+              I travel throughout Hokkaido for weddings. For events further
+              afield across Japan, please reach out — I would love to discuss
+              your plans.
             </p>
             <p className="mt-4 font-sans text-sm text-[#7A7570]">
-              I communicate fluently in both <strong className="text-[#2C2C2C] font-medium">English</strong> and{' '}
-              <strong className="text-[#2C2C2C] font-medium">Japanese</strong> — so you can always feel understood.
+              I communicate fluently in both{" "}
+              <strong className="text-[#2C2C2C] font-medium">English</strong>{" "}
+              and{" "}
+              <strong className="text-[#2C2C2C] font-medium">Japanese</strong> —
+              so you can always feel understood.
             </p>
           </div>
 
@@ -133,7 +145,9 @@ export default function AboutPage() {
               </p>
               <div className="mt-6 h-px w-12 bg-[#B8A080] mx-auto" />
               <p className="mt-6 font-sans text-xs text-[#7A7570]">
-                Available for travel<br />across Hokkaido & Japan
+                Available for travel
+                <br />
+                across Hokkaido & Japan
               </p>
             </div>
           </div>
@@ -160,5 +174,5 @@ export default function AboutPage() {
         </div>
       </section>
     </>
-  )
+  );
 }
