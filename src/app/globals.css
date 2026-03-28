@@ -44,3 +44,124 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
 }
+
+/* Blog prose styles */
+.prose {
+  color: #4A4542;
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  font-weight: 300;
+  max-width: 68ch;
+}
+
+.prose h2 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+  color: #2C2C2C;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  line-height: 1.25;
+}
+
+.prose h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #2C2C2C;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.prose p {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+.prose strong {
+  color: #2C2C2C;
+  font-weight: 500;
+}
+
+.prose a {
+  color: #A8796A;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.prose a:hover {
+  color: #C9A99A;
+}
+
+.prose ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+}
+
+.prose ul li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.prose ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 0.4rem;
+  height: 1px;
+  background-color: #B8A080;
+}
+
+.prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  counter-reset: ol-counter;
+  list-style: none;
+}
+
+.prose ol li {
+  position: relative;
+  padding-left: 0.5rem;
+  margin-bottom: 0.6rem;
+  counter-increment: ol-counter;
+}
+
+.prose ol li::before {
+  content: counter(ol-counter) '.';
+  position: absolute;
+  left: -1.5rem;
+  color: #B8A080;
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+}
+
+.prose blockquote {
+  border-left: 2px solid #B8A080;
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: #2C2C2C;
+  font-style: italic;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid #EDD9D1;
+  margin: 3rem 0;
+}
+
+.prose > *:first-child {
+  margin-top: 0;
+}
