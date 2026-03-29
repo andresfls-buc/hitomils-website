@@ -21,6 +21,30 @@ const jost = Jost({
 
 export const metadata: Metadata = buildMetadata()
 
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': 'https://hitomils.com/#hitomi',
+  name: 'Hitomi Landazabal',
+  url: 'https://hitomils.com/about',
+  image: 'https://hitomils.com/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg',
+  jobTitle: 'Bridal Makeup & Hair Artist',
+  description:
+    'Professional bridal makeup artist and wedding hairstylist based in Sapporo, Hokkaido, Japan. Over 12 years of bridal experience, trained at Belle e Poque. Serving international and Asian brides.',
+  knowsLanguage: ['English', 'Japanese'],
+  sameAs: ['https://www.instagram.com/hitomi.l.s_sapporo/'],
+  worksFor: {
+    '@type': 'LocalBusiness',
+    '@id': 'https://hitomils.com/#business',
+  },
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Sapporo',
+    addressRegion: 'Hokkaido',
+    addressCountry: 'JP',
+  },
+}
+
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
@@ -29,7 +53,8 @@ const localBusinessSchema = {
   description:
     'Professional bridal makeup and wedding hairstyling in Sapporo, Japan. Serving international and Asian clients with elegant, timeless looks.',
   url: 'https://hitomils.com',
-  image: 'https://hitomils.com/images/og-image.jpg',
+  image: 'https://hitomils.com/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg',
+  founder: { '@id': 'https://hitomils.com/#hitomi' },
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Sapporo',
@@ -52,7 +77,7 @@ const localBusinessSchema = {
     },
     geoRadius: '100000',
   },
-  sameAs: ['https://www.instagram.com/hitomi.l.s_sapporo/?utm_source=ig_web_button_share_sheet'],
+  sameAs: ['https://www.instagram.com/hitomi.l.s_sapporo/'],
   knowsLanguage: ['English', 'Japanese'],
 }
 
@@ -67,6 +92,10 @@ export default function RootLayout({
       className={`${cormorant.variable} ${jost.variable} h-full antialiased`}
     >
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}

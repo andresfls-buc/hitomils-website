@@ -53,24 +53,21 @@ export default async function BlogPostPage({
 
   const articleSchema = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'BlogPosting',
     headline: post.title,
     description: post.description,
     datePublished: post.date,
     dateModified: post.date,
     author: {
+      '@id': 'https://hitomils.com/#hitomi',
       '@type': 'Person',
       name: 'Hitomi Landazabal',
       url: 'https://hitomils.com/about',
+      image: 'https://hitomils.com/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg',
       jobTitle: 'Bridal Makeup & Hair Artist',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'Sapporo',
-        addressRegion: 'Hokkaido',
-        addressCountry: 'JP',
-      },
     },
     publisher: {
+      '@id': 'https://hitomils.com/#business',
       '@type': 'LocalBusiness',
       name: 'Hitomi — Bridal Makeup & Hair Artist',
       url: 'https://hitomils.com',
