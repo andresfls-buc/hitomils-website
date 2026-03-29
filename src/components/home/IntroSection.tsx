@@ -1,5 +1,5 @@
-import Image from 'next/image'
-import Button from '@/components/ui/Button'
+import Image from "next/image";
+import Button from "@/components/ui/Button";
 
 export default function IntroSection() {
   return (
@@ -11,21 +11,23 @@ export default function IntroSection() {
             About the Artist
           </p>
           <h2 className="font-serif text-4xl md:text-5xl font-light text-[#2C2C2C] leading-snug">
-            Beauty That Tells<br />
-            <em className="not-italic italic">Your Story</em>
+            Where class & technique meet
+            <br />
+            <em className="not-italic italic">To tell your Story</em>
           </h2>
           <div className="mt-5 h-px w-16 bg-[#B8A080]" />
           <p className="mt-8 font-sans text-base text-[#7A7570] leading-relaxed font-light">
-            Based in Sapporo, Hokkaido, I specialize in bridal makeup and wedding
-            hairstyling for brides who appreciate elegance and timeless beauty.
-            With a deep passion for my craft and experience working with clients
-            from around the world, I create looks that feel authentically you —
-            refined, lasting, and luminous.
+            Based in Sapporo, Hokkaido, I specialize in bridal makeup and
+            wedding hairstyling for brides who appreciate elegance,beauty &
+            technique. With a deep passion for my craft and experience with over
+            12+ years of experience working with clients from around the world,
+            I create looks that are tailored me to you — refined, enduring, and
+            luxurious.
           </p>
           <p className="mt-4 font-sans text-base text-[#7A7570] leading-relaxed font-light">
-            Whether you&apos;re planning a destination wedding in Hokkaido or
-            celebrating your special day close to home, I would be honored to
-            be part of your morning.
+            Whether you&apos;re planning a destination wedding in Hokkaido,
+            Japan,we are here to provided you with the best services and I would
+            be honored to be part of your special day.
           </p>
           <div className="mt-10">
             <Button href="/about" variant="ghost">
@@ -38,7 +40,7 @@ export default function IntroSection() {
         <div className="relative">
           <div className="relative aspect-[3/4] overflow-hidden">
             <Image
-              src="/images/about/portrait.jpg"
+              src="/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg"
               alt="Hitomi Landazabal, bridal makeup and hair artist in Sapporo, Japan"
               fill
               className="object-cover object-top"
@@ -50,5 +52,5 @@ export default function IntroSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
