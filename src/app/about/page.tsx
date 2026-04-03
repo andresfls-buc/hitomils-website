@@ -63,24 +63,24 @@ export default function AboutPage() {
                 you are — not who a trend says you should be.
               </p>
               <p>
-                My approach is rooted in skin care and technique. Before any
-                brush touches your face, I ensure your skin is prepared and
-                nourished. I work with professional-grade products chosen for
-                longevity and photography performance, so your look stays
-                flawless from your morning preparations through your final
-                dance.
+                My working method is done by focusing on skin care ,technique &
+                precision. Before any brush touches your face, I ensure your
+                skin is prepared and nourished. I work with professional top
+                quality products chosen for longevity and photography
+                performance, so your look stays flawless and unforgettable from
+                your morning preparations through your final times of the day.
               </p>
               <p>
                 Whether you envision a soft, dewey natural look or a polished
-                evening glamour, I am here to make your wedding morning as calm,
-                beautiful, and memorable as the ceremony itself.
+                evening glamour, I will be there to ensure that timeless look,
+                you are looking for your wedding day is as perfect as it can be.
               </p>
             </div>
 
             <div className="mt-6 flex items-center gap-2 text-[#7A7570]">
               <MapPin size={16} className="text-[#B8A080]" />
               <span className="font-sans text-sm">
-                Based in Sapporo, Hokkaido — available across Japan
+                Located in Sapporo, Hokkaido — available across Japan
               </span>
             </div>
           </div>
