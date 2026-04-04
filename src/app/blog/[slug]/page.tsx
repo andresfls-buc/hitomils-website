@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { buildMetadata } from '@/lib/metadata'
@@ -32,6 +33,14 @@ export async function generateMetadata({
       publishedTime: post.date,
       authors: ['Hitomi Landazabal'],
       tags: post.tags,
+      images: [
+        {
+          url: `https://hitomils.com/images/blog/${slug}.jpg`,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
     },
   })
 }
@@ -89,8 +98,18 @@ export default async function BlogPostPage({
       />
 
       {/* Article Hero */}
-      <section className="relative bg-[#2C2C2C] pt-32 pb-16 px-6">
-        <div className="max-w-4xl mx-auto">
+      <section className="relative pt-32 pb-16 px-6 overflow-hidden">
+        {/* Background image */}
+        <Image
+          src={`/images/blog/${slug}.jpg`}
+          alt={post.title}
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* Dark overlay so text stays readable */}
+        <div className="absolute inset-0 bg-[#2C2C2C]/75" />
+        <div className="relative z-10 max-w-4xl mx-auto">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 mb-8">
             <Link

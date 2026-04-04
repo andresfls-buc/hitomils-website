@@ -51,16 +51,23 @@ export default function AboutPage() {
             <div className="mt-8 space-y-5 font-sans text-base text-[#7A7570] leading-relaxed font-light">
               <p>
                 I&apos;m a bridal makeup artist and wedding hairstylist based in
-                beautiful Sapporo, Hokkaido. My passion for beauty began as a
-                love of transformation — the moment when a woman looks in the
-                mirror and feels truly, completely herself.
+                beautiful city of Sapporo, Hokkaido. My passion for beauty began
+                at an early age when i used to be my only one client , i fell in
+                love with the process of transformation and the confidence it
+                can bring. , I have polished my skills and developed a deep
+                understanding of how to enhance natural beauty while creating
+                timeless looks that make every bride feel like the best version
+                of themselves. My goal is to create a memorable and lasting
+                memory for my brides so the moment they look into the mirror
+                they feel satisfied with the reflection they see in the mirror
+                and feels truly, completely themselves.
               </p>
               <p>
-                Over the years, I have had the privilege of working with brides
-                from Japan, Europe, North America, and across Asia. I understand
-                that every woman is unique, and I take time to listen, to
-                understand your vision, and to create a look that honours who
-                you are — not who a trend says you should be.
+                During my working years, I have had the privilege of working
+                with brides from Japan, Korea, Europe, North America, and across
+                Asia. I understand that every woman is unique, and I take time
+                to listen, to understand your vision, and to create a look that
+                honours who you are.
               </p>
               <p>
                 My working method is done by focusing on skin care ,technique &
