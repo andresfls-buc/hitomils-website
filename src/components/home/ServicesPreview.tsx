@@ -4,24 +4,24 @@ import Button from '@/components/ui/Button'
 
 const previewServices = [
   {
-    title: 'Bridal Makeup',
+    title: 'Bridal Hair & Makeup — At Salon',
     description:
-      'Flawless, long-lasting makeup tailored to your features and wedding aesthetic. Natural glow to polished glamour.',
-    from: '¥35,000',
-    href: '/services#bridal-makeup',
+      'The full bridal experience at the salon — hair and makeup together for a cohesive, harmonious look on your most important day.',
+    from: '¥12,000〜',
+    href: '/services#bridal-combo-salon',
   },
   {
-    title: 'Wedding Hairstyling',
+    title: 'Bridal Hair & Makeup — At Hotel',
     description:
-      'Elegant updos, flowing waves, or traditional styles crafted to complement your dress and last all day.',
-    from: '¥30,000',
-    href: '/services#bridal-hair',
+      'Hitomi comes to you. Get ready in the comfort of your hotel room with a fully equipped artist on-site.',
+    from: '¥22,000〜',
+    href: '/services#bridal-combo-hotel',
   },
   {
     title: 'Special Occasions',
     description:
       'Graduation ceremonies, parties, photo shoots — any moment you want to look and feel your very best.',
-    from: '¥15,000',
+    from: 'On request',
     href: '/services#event-makeup',
   },
 ]
@@ -50,7 +50,7 @@ export default function ServicesPreview() {
                 {service.description}
               </p>
               <p className="mt-6 font-sans text-xs uppercase tracking-widest text-[#B8A080]">
-                From {service.from}
+                {service.from === 'On request' ? 'On request' : `From ${service.from}`}
               </p>
               <Link
                 href={service.href}

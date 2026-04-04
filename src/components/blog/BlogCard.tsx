@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import type { BlogPost } from '@/lib/blog'
 
 interface BlogCardProps {
@@ -11,16 +12,15 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
     return (
       <Link href={`/blog/${post.slug}`} className="group block">
         <article className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-[#EDD9D1] hover:border-[#C9A99A] transition-colors duration-300">
-          {/* Image placeholder */}
-          <div className="relative bg-[#F5EDE8] aspect-[4/3] md:aspect-auto overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center px-8">
-                <p className="font-sans text-xs uppercase tracking-widest text-[#B8A080] mb-2">
-                  {post.category}
-                </p>
-                <div className="h-px w-12 bg-[#B8A080] mx-auto" />
-              </div>
-            </div>
+          {/* Image */}
+          <div className="relative aspect-[4/3] md:aspect-auto overflow-hidden">
+            <Image
+              src={`/images/blog/${post.slug}.jpg`}
+              alt={post.title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </div>
 
           {/* Content */}
@@ -61,13 +61,15 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
   return (
     <Link href={`/blog/${post.slug}`} className="group block">
       <article className="border border-[#EDD9D1] hover:border-[#C9A99A] transition-colors duration-300 h-full flex flex-col">
-        {/* Image placeholder */}
-        <div className="relative bg-[#F5EDE8] aspect-[4/3] overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="font-sans text-xs uppercase tracking-widest text-[#B8A080]">
-              {post.category}
-            </p>
-          </div>
+        {/* Image */}
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <Image
+            src={`/images/blog/${post.slug}.jpg`}
+            alt={post.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
         </div>
 
         {/* Content */}

@@ -40,7 +40,7 @@ export default function IntroSection() {
         <div className="relative">
           <div className="relative aspect-[3/4] overflow-hidden">
             <Image
-              src="/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg"
+              src="/images/about/hitomi-landazabal-bridal-weddings-makeup-sapporo.jpg"
               alt="Hitomi Landazabal, bridal makeup and hair artist in Sapporo, Japan"
               fill
               className="object-cover object-top"
