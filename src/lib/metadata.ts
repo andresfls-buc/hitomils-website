@@ -29,9 +29,7 @@ export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
       siteName: 'Hitomi — Bridal Makeup & Hair Artist',
       images: [
         {
-          url: '/images/og-image.jpg',
-          width: 1200,
-          height: 630,
+          url: '/images/about/hitomi-landazabal-bridal-weddings-makeup-sapporo.jpg',
           alt: 'Hitomi — Bridal Makeup & Hair Artist in Sapporo, Japan',
         },
       ],
