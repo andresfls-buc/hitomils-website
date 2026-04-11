@@ -4,6 +4,7 @@ import { buildMetadata } from "@/lib/metadata";
 import PageHero from "@/components/ui/PageHero";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Button from "@/components/ui/Button";
+import Reveal from "@/components/ui/Reveal";
 import { MapPin, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = buildMetadata({
@@ -25,13 +26,13 @@ const specialties = [
 export default function AboutPage() {
   return (
     <>
-      <PageHero title="About Hitomi" subtitle="The Artist" />
+      <PageHero title="Hitomi Landazabal" subtitle="The Artist" />
 
       {/* Bio Section */}
       <section className="py-24 md:py-32 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
           {/* Image */}
-          <div className="relative order-2 md:order-1">
+          <Reveal className="relative order-2 md:order-1">
             <div className="relative aspect-[3/4] max-h-[420px] md:max-h-none overflow-hidden">
               <Image
                 src="/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg"
@@ -42,25 +43,27 @@ export default function AboutPage() {
               />
             </div>
             <div className="absolute -bottom-4 -left-4 w-full h-full border border-[#B8A080] -z-10" />
-          </div>
+          </Reveal>
 
           {/* Text */}
-          <div className="order-1 md:order-2">
-            <SectionTitle subtitle="My Story" title="Hello, I'm Hitomi" />
-
+          <Reveal delay={0.16} className="order-1 md:order-2">
+            <SectionTitle
+              subtitle="My Story"
+              title="Nice to meet you (˶ᵔ ᵕ ᵔ˶)"
+            />
             <div className="mt-8 space-y-5 font-sans text-base text-[#7A7570] leading-relaxed font-light">
               <p>
                 I&apos;m a bridal makeup artist and wedding hairstylist based in
                 beautiful city of Sapporo, Hokkaido. My passion for beauty began
-                at an early age when i used to be my only one client , i fell in
+                at an early age when i used to be my only one client, I fell in
                 love with the process of transformation and the confidence it
-                can bring. , I have polished my skills and developed a deep
+                can bring. I have polished my skills and developed a deep
                 understanding of how to enhance natural beauty while creating
                 timeless looks that make every bride feel like the best version
                 of themselves. My goal is to create a memorable and lasting
                 memory for my brides so the moment they look into the mirror
-                they feel satisfied with the reflection they see in the mirror
-                and feels truly, completely themselves.
+                they feel satisfied with the reflection they see and feels
+                truly, completely themselves.
               </p>
               <p>
                 During my working years, I have had the privilege of working
@@ -70,7 +73,7 @@ export default function AboutPage() {
                 honours who you are.
               </p>
               <p>
-                My working method is done by focusing on skin care ,technique &
+                My working method is done by focusing on skin care, technique &
                 precision. Before any brush touches your face, I ensure your
                 skin is prepared and nourished. I work with professional top
                 quality products chosen for longevity and photography
@@ -78,40 +81,41 @@ export default function AboutPage() {
                 your morning preparations through your final times of the day.
               </p>
               <p>
-                Whether you envision a soft, dewey natural look or a polished
-                evening glamour, I will be there to ensure that timeless look,
+                Whether you envision a soft, dewy natural look or a polished
+                evening glamour, I will be there to ensure that timeless look
                 you are looking for your wedding day is as perfect as it can be.
               </p>
             </div>
-
             <div className="mt-6 flex items-center gap-2 text-[#7A7570]">
               <MapPin size={16} className="text-[#B8A080]" />
               <span className="font-sans text-sm">
                 Located in Sapporo, Hokkaido — available across Japan
               </span>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Specialties */}
       <section className="py-24 md:py-32 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <SectionTitle
-            subtitle="What I Do Best"
-            title="Specialties"
-            centered
-          />
-
+          <Reveal>
+            <SectionTitle
+              subtitle="What I Do Best"
+              title="Specialties"
+              centered
+            />
+          </Reveal>
           <div className="mt-16 grid grid-cols-2 md:grid-cols-3 gap-4">
-            {specialties.map((item) => (
-              <div
-                key={item}
-                className="flex items-center gap-3 border border-[#EDD9D1] px-5 py-4"
-              >
-                <Sparkles size={16} className="text-[#B8A080] shrink-0" />
-                <span className="font-sans text-sm text-[#2C2C2C]">{item}</span>
-              </div>
+            {specialties.map((item, i) => (
+              <Reveal key={item} delay={i * 0.08}>
+                <div className="flex items-center gap-3 border border-[#EDD9D1] px-5 py-4">
+                  <Sparkles size={16} className="text-[#B8A080] shrink-0" />
+                  <span className="font-sans text-sm text-[#2C2C2C]">
+                    {item}
+                  </span>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -120,7 +124,7 @@ export default function AboutPage() {
       {/* Location */}
       <section className="py-24 md:py-32 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div>
+          <Reveal>
             <SectionTitle subtitle="Where I Work" title="Sapporo, Hokkaido" />
             <p className="mt-8 font-sans text-base text-[#7A7570] leading-relaxed font-light">
               Sapporo is one of Japan&apos;s most stunning cities for a
@@ -140,44 +144,49 @@ export default function AboutPage() {
               <strong className="text-[#2C2C2C] font-medium">Japanese</strong> —
               so you can always feel understood.
             </p>
-          </div>
+          </Reveal>
 
-          {/* Location badge */}
-          <div className="flex items-center justify-center">
-            <div className="border border-[#EDD9D1] p-12 text-center">
-              <MapPin size={32} className="text-[#B8A080] mx-auto mb-4" />
-              <p className="font-serif text-3xl text-[#2C2C2C]">Sapporo</p>
-              <p className="font-sans text-xs uppercase tracking-widest text-[#B8A080] mt-2">
-                Hokkaido, Japan
-              </p>
-              <div className="mt-6 h-px w-12 bg-[#B8A080] mx-auto" />
-              <p className="mt-6 font-sans text-xs text-[#7A7570]">
-                Available for travel
-                <br />
-                across Hokkaido & Japan
-              </p>
+          <Reveal delay={0.18}>
+            <div className="flex items-center justify-center">
+              <div className="border border-[#EDD9D1] p-12 text-center">
+                <MapPin size={32} className="text-[#B8A080] mx-auto mb-4" />
+                <p className="font-serif text-3xl text-[#2C2C2C]">Sapporo</p>
+                <p className="font-sans text-xs uppercase tracking-widest text-[#B8A080] mt-2">
+                  Hokkaido, Japan
+                </p>
+                <div className="mt-6 h-px w-12 bg-[#B8A080] mx-auto" />
+                <p className="mt-6 font-sans text-xs text-[#7A7570]">
+                  Available for travel
+                  <br />
+                  across Hokkaido & Japan
+                </p>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CTA */}
       <section className="py-20 px-6 bg-[#EDD9D1]">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="font-serif text-4xl md:text-5xl font-light text-[#2C2C2C]">
-            Let&apos;s Create Your Bridal Look Together
-          </h2>
-          <p className="mt-4 font-sans text-sm text-[#7A7570] font-light">
-            I would love to hear about your wedding vision.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button href="/contact" variant="filled" size="lg">
-              Get in Touch
-            </Button>
-            <Button href="/portfolio" variant="ghost" size="lg">
-              View My Work
-            </Button>
-          </div>
+          <Reveal>
+            <h2 className="font-serif text-4xl md:text-5xl font-light text-[#2C2C2C]">
+              Let&apos;s Create Your Bridal Look Together
+            </h2>
+            <p className="mt-4 font-sans text-sm text-[#7A7570] font-light">
+              I would love to hear about your wedding vision.
+            </p>
+          </Reveal>
+          <Reveal delay={0.14}>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              <Button href="/contact" variant="filled" size="lg">
+                Get in Touch
+              </Button>
+              <Button href="/portfolio" variant="ghost" size="lg">
+                View My Work
+              </Button>
+            </div>
+          </Reveal>
         </div>
       </section>
     </>

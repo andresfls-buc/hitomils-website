@@ -1,51 +1,71 @@
-import Image from 'next/image'
-import Button from '@/components/ui/Button'
+import HeroImageSequence from "./HeroImageSequence";
+import Button from "@/components/ui/Button";
 
 export default function HeroSection() {
   return (
-    /*
-     * flex-col-reverse on mobile  →  image renders on top, text below
-     * md:flex-row on desktop      →  text on left (DOM first), image on right
-     */
-    <section className="flex flex-col-reverse md:flex-row h-screen min-h-[620px] overflow-hidden">
+    <section className="relative w-full h-[88vh] min-h-[580px] max-h-[860px] overflow-hidden bg-[#FAF7F4]">
+      {/* ── Image container ───────────────────────────────────────────────
+          Mobile  : full bleed (image behind gradient overlay).
+          Desktop : right column only, inset from top/bottom so it feels
+                    framed rather than wallpapered.
+      ─────────────────────────────────────────────────────────────────── */}
+      <div
+        className="
+        absolute inset-0
+        md:left-[40%] md:top-6 md:bottom-6 md:right-6
+      "
+      >
+        <HeroImageSequence />
+        {/* Subtle overlay to reduce visual weight */}
+        <div className="absolute inset-0 bg-black/10" />
+      </div>
 
-      {/* ── LEFT: Text panel ───────────────────────────────────── */}
-      <div className="
-        flex flex-col justify-center
-        w-full md:w-[40%]
-        bg-[#FAF7F4]
+      {/* ── Text panel ────────────────────────────────────────────────────
+          Mobile  : pinned to the BOTTOM, full width, gradient fade upward.
+          Desktop : solid cream column on the LEFT, full height.
+      ─────────────────────────────────────────────────────────────────── */}
+      <div
+        className="
+        absolute left-0 z-10
+        flex flex-col
         px-8 sm:px-12 lg:px-14 xl:px-20
-        py-10 md:py-0
-        flex-1 md:flex-none
-      ">
 
-        {/* Eyebrow */}
-        <p className="hero-eyebrow
-          font-sans text-[10px] uppercase tracking-[0.22em] text-[#B8A080]">
+        bottom-0 w-full justify-end
+        bg-gradient-to-t from-[#FAF7F4] via-[#FAF7F4]/95 to-transparent
+        pt-24 pb-12
+
+        md:inset-y-0 md:w-[42%] md:justify-center
+        md:bg-[#FAF7F4] md:pt-0 md:pb-0
+      "
+      >
+        <p
+          className="hero-eyebrow
+          font-sans text-xs uppercase tracking-[0.22em] text-[#7A7570]"
+        >
           Bridal Makeup &amp; Hair · Sapporo, Japan
         </p>
 
-        {/* Heading */}
-        <h1 className="hero-title
-          mt-5 font-serif font-light leading-[1.08]
-          text-[#2C2C2C]
-          text-[2.6rem] sm:text-5xl lg:text-[3.2rem] xl:text-[3.8rem]">
-          Bridal Beauty<br />
-          <em className="not-italic text-[#A8796A]">by Hitomi</em>
+        <h1
+          className="hero-title
+          mt-5 font-serif font-light leading-[1.08] text-[#2C2C2C]
+          text-[2.6rem] sm:text-5xl lg:text-[3.2rem] xl:text-[3.8rem]"
+        >
+          Bridal Beauty
+          <br />
+          <em className="not-italic text-[#A8796A]">by Hitomi </em>
         </h1>
 
-        {/* Separator */}
         <div className="hero-body mt-6 mb-6 w-8 h-px bg-[#D6C4A8]" />
 
-        {/* Body */}
-        <p className="hero-body
+        <p
+          className="hero-body
           font-sans font-light text-[#7A7570]
-          text-sm leading-[1.9] max-w-[270px]">
-          Timeless, elegant looks for your most unforgettable day.
-          Serving brides from around the world in Hokkaido, Japan.
+          text-sm leading-[1.9] max-w-[270px]"
+        >
+          Timeless, elegant looks for your most unforgettable day. Serving
+          brides from around the world in Hokkaido, Japan.
         </p>
 
-        {/* CTAs */}
         <div className="hero-cta mt-9 flex flex-col xs:flex-row gap-3">
           <Button href="/portfolio" variant="filled" size="lg">
             View My Work
@@ -55,25 +75,6 @@ export default function HeroSection() {
           </Button>
         </div>
       </div>
-
-      {/* ── RIGHT: Image panel ─────────────────────────────────── */}
-      <div className="
-        relative
-        w-full md:w-[60%]
-        h-[58vh] md:h-full
-        shrink-0
-        overflow-hidden
-      ">
-        <Image
-          src="/images/home/hero.jpg"
-          alt="Elegant bridal makeup by Hitomi, Sapporo wedding hairstylist"
-          fill
-          priority
-          className="hero-image object-cover object-center"
-          sizes="(max-width: 768px) 100vw, 60vw"
-        />
-      </div>
-
     </section>
-  )
+  );
 }
