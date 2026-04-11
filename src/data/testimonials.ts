@@ -1,22 +1,34 @@
 import type { Testimonial } from "@/types";
 
+// Reviews sourced from Google — link to the Google Maps listing to verify.
+const GOOGLE_MAPS_URL = "https://share.google/4WgUx0VlOZucwBqwb";
+
 export const testimonials: Testimonial[] = [
   {
-    quote:
-      "On my wedding day Hitomi guide us me and my husband every step of the process, with exceptional care and attention to detail, we came from Korea so we were worry about the language barrier but her englis was so easy to understand and she was very kind thnxxx Hitomi you are the best !!!",
-    name: "Mina Lee.",
+    name: "Mina Lee",
     occasion: "Niseko, Hokkaido",
+    quote:
+      "On my wedding day Hitomi guided us every step of the process, with exceptional care and attention to detail. We came from Korea so we were worried about the language barrier but her English was so easy to understand and she was very kind — thnxxx Hitomi you are the best!!!",
+
+    stars: 5,
+    googleUrl: GOOGLE_MAPS_URL,
   },
   {
-    quote:
-      "Hello Hitomi first of all thank you for your services, we got married in Sapporo, lake toya to be exact on the day the services provided by her was exceptional and outstanding and she was there the whole time ,re touching me and helping me with the dress etc, thank you for your hard work xoxo.",
     name: "Emily T.",
     occasion: "Lake Toya, Sapporo",
+    quote:
+      "Thank you for your services — we got married in Sapporo, Lake Toya to be exact. On the day the services provided were exceptional and outstanding, and she was there the whole time re-touching me and helping with the dress. Thank you for your hard work xoxo.",
+
+    stars: 5,
+    googleUrl: GOOGLE_MAPS_URL,
   },
   {
-    quote:
-      "From the trial session until the wedding day, Hitomi was a beauty.Helping me feel confident throughout the whole process and her makeup skills were great 5/5.",
     name: "Aisah M.",
     occasion: "Chapel venue, Hokkaido",
+    quote:
+      "From the trial session until the wedding day, Hitomi was a gem. She helped me feel confident throughout the whole process and her makeup skills were incredible — 5/5.",
+
+    stars: 5,
+    googleUrl: GOOGLE_MAPS_URL,
   },
 ];

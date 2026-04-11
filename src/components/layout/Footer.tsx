@@ -17,7 +17,9 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
         {/* Brand */}
         <div>
-          <p className="font-serif text-3xl mb-3">Hitomi</p>
+          <Link href="/" className="font-serif text-3xl mb-3 hover:text-[#C9A99A] transition-colors inline-block">
+            Hitomi
+          </Link>
           <p className="font-sans text-sm text-[#B8A080] leading-relaxed">
             Bridal Makeup & Hair Artist
           </p>

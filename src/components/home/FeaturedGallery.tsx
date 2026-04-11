@@ -6,6 +6,7 @@ import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 import SectionTitle from '@/components/ui/SectionTitle'
 import Button from '@/components/ui/Button'
+import Reveal from '@/components/ui/Reveal'
 import { portfolioImages } from '@/data/portfolio'
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -134,10 +135,12 @@ export default function FeaturedGallery() {
       <div className="max-w-6xl mx-auto">
 
         {/* ── Header ─────────────────────────────────────────────────────────── */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-          <SectionTitle subtitle="Portfolio" title="Selected Work" />
-          <Button href="/portfolio" variant="ghost" size="sm">Full Portfolio</Button>
-        </div>
+        <Reveal>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+            <SectionTitle subtitle="Portfolio" title="Selected Work" />
+            <Button href="/portfolio" variant="ghost" size="sm">Full Portfolio</Button>
+          </div>
+        </Reveal>
 
         {/* ── Carousel ───────────────────────────────────────────────────────── */}
         <div className="relative">
