@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://hitomils.com'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://makeupbyhitomi.com'
 
 export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
   return {

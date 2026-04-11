@@ -9,7 +9,7 @@ export const metadata: Metadata = buildMetadata({
   title: 'Wedding & Bridal Beauty Blog',
   description:
     'Expert advice on wedding makeup, bridal hairstyling, and planning your beauty for a destination wedding in Japan. Written by Hitomi, a professional bridal artist in Sapporo, Hokkaido.',
-  alternates: { canonical: 'https://hitomils.com/blog' },
+  alternates: { canonical: 'https://makeupbyhitomi.com/blog' },
   openGraph: {
     type: 'website',
     title: 'Wedding & Bridal Beauty Blog | Hitomi — Sapporo, Japan',

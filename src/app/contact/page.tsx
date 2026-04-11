@@ -10,7 +10,7 @@ export const metadata: Metadata = buildMetadata({
   title: 'Contact',
   description:
     'Contact Hitomi Landazabal, bridal makeup and hair artist in Sapporo, Japan. Reach out via Instagram to inquire about availability and pricing for your wedding day.',
-  alternates: { canonical: 'https://hitomils.com/contact' },
+  alternates: { canonical: 'https://makeupbyhitomi.com/contact' },
 })
 
 export default function ContactPage() {
