@@ -243,6 +243,91 @@ export const portfolioImages: GalleryImage[] = [
     category: 'bridal-makeup',
   },
 
+  {
+    src: '/images/portfolio/bridal-makeup-soft-editorial-reclining-white-gown-sapporo.jpg',
+    alt: 'Soft editorial bridal makeup, bride reclining in white gown, Sapporo',
+    width: 1200,
+    height: 800,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/bridal-makeup-close-up-coral-peach-pearl-earring-sapporo.jpg',
+    alt: 'Close-up bridal makeup with coral peach tones and pearl ear cuff, Sapporo',
+    width: 800,
+    height: 1067,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/bridal-makeup-natural-soft-lace-gown-close-up-sapporo.jpg',
+    alt: 'Natural soft bridal makeup close-up, lace gown, Sapporo',
+    width: 1200,
+    height: 800,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/bridal-makeup-long-wavy-hair-floral-lace-gown-sapporo.jpg',
+    alt: 'Bridal makeup with long wavy hair and floral lace gown, Sapporo',
+    width: 800,
+    height: 1067,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/winter-wedding-couple-fur-cape-red-bouquet-hokkaido.jpg',
+    alt: 'Winter wedding couple in snow forest, bride in white fur cape with red rose bouquet, Hokkaido',
+    width: 1200,
+    height: 800,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/winter-bride-fur-cape-red-bouquet-snow-forest-hokkaido.jpg',
+    alt: 'Winter bride in white fur cape holding red rose bouquet, snow pine forest, Hokkaido',
+    width: 1200,
+    height: 800,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/autumn-wedding-couple-fall-foliage-outdoor-hokkaido.jpg',
+    alt: 'Autumn wedding couple in fall foliage, bridal makeup by Hitomi, Hokkaido',
+    width: 800,
+    height: 1067,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/autumn-bride-bridal-makeup-fall-foliage-birch-hokkaido.jpg',
+    alt: 'Autumn bride with bridal makeup, looking back smiling, fall foliage and birch trees, Hokkaido',
+    width: 800,
+    height: 1067,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/summer-wedding-couple-lakeside-pond-pampas-bouquet-hokkaido.jpg',
+    alt: 'Summer wedding couple on lakeside dock, bride with pampas grass bouquet, Hokkaido',
+    width: 800,
+    height: 1067,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/summer-wedding-couple-garden-grass-floral-crown-hokkaido.jpg',
+    alt: 'Summer wedding couple lying on garden grass, bride with floral crown and pampas bouquet, Hokkaido',
+    width: 1200,
+    height: 800,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/lavender-field-wedding-couple-veil-bridal-makeup-hokkaido.jpg',
+    alt: 'Wedding couple under veil in lavender field, romantic bridal makeup, Hokkaido',
+    width: 1200,
+    height: 800,
+    category: 'bridal-makeup',
+  },
+  {
+    src: '/images/portfolio/lavender-field-bride-veil-bridal-makeup-hokkaido.jpg',
+    alt: 'Bride under veil in lavender field, dreamy bridal makeup, strapless gown, Hokkaido',
+    width: 800,
+    height: 1067,
+    category: 'bridal-makeup',
+  },
+
   // ─── HAIRSTYLING ─────────────────────────────────────────────────────────────
 
   {
@@ -325,6 +410,20 @@ export const portfolioImages: GalleryImage[] = [
 
   // ─── SPECIAL OCCASIONS ───────────────────────────────────────────────────────
 
+  {
+    src: '/images/portfolio/special-occasion-makeup-black-satin-dress-calla-lily-sapporo.jpg',
+    alt: 'Special occasion makeup, black satin dress with calla lily bouquet, studio, Sapporo',
+    width: 800,
+    height: 1067,
+    category: 'special-occasion',
+  },
+  {
+    src: '/images/portfolio/special-occasion-makeup-black-satin-dress-studio-portrait-sapporo.jpg',
+    alt: 'Special occasion makeup and sleek updo, black satin dress, studio portrait, Sapporo',
+    width: 800,
+    height: 1067,
+    category: 'special-occasion',
+  },
   {
     src: '/images/portfolio/editorial-makeup-updo-black-dress-studio-sapporo.jpg',
     alt: 'Editorial makeup with messy updo and black dress, studio shoot, Sapporo',
