@@ -11,7 +11,7 @@ export const metadata: Metadata = buildMetadata({
   title: "About Hitomi",
   description:
     "Meet Hitomi Landazabal — bridal makeup artist and wedding hairstylist based in Sapporo, Japan. Specialising in elegant looks for international and Asian brides in Hokkaido.",
-  alternates: { canonical: "https://hitomils.com/about" },
+  alternates: { canonical: "https://makeupbyhitomi.com/about" },
 });
 
 const specialties = [

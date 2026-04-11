@@ -8,7 +8,7 @@ export const metadata: Metadata = buildMetadata({
   title: 'Portfolio',
   description:
     'Browse the bridal makeup and wedding hairstyling portfolio of Hitomi Landazabal in Sapporo, Japan. Elegant looks for international and Asian brides in Hokkaido.',
-  alternates: { canonical: 'https://hitomils.com/portfolio' },
+  alternates: { canonical: 'https://makeupbyhitomi.com/portfolio' },
 })
 
 const gallerySchema = {
@@ -17,10 +17,10 @@ const gallerySchema = {
   name: "Hitomi's Bridal Makeup & Hair Portfolio — Sapporo, Japan",
   description:
     'A collection of bridal makeup and wedding hairstyling work by Hitomi Landazabal in Sapporo, Hokkaido.',
-  url: 'https://hitomils.com/portfolio',
+  url: 'https://makeupbyhitomi.com/portfolio',
   image: portfolioImages.map((img) => ({
     '@type': 'ImageObject',
-    contentUrl: `https://hitomils.com${img.src}`,
+    contentUrl: `https://makeupbyhitomi.com${img.src}`,
     description: img.alt,
     width: img.width,
     height: img.height,

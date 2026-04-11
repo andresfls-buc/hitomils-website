@@ -25,7 +25,7 @@ export async function generateMetadata({
   return buildMetadata({
     title: post.title,
     description: post.description,
-    alternates: { canonical: `https://hitomils.com/blog/${slug}` },
+    alternates: { canonical: `https://makeupbyhitomi.com/blog/${slug}` },
     openGraph: {
       type: 'article',
       title: post.title,
@@ -35,7 +35,7 @@ export async function generateMetadata({
       tags: post.tags,
       images: [
         {
-          url: `https://hitomils.com/images/blog/${slug}.jpg`,
+          url: `https://makeupbyhitomi.com/images/blog/${slug}.jpg`,
           width: 1200,
           height: 630,
           alt: post.title,
@@ -68,22 +68,22 @@ export default async function BlogPostPage({
     datePublished: post.date,
     dateModified: post.date,
     author: {
-      '@id': 'https://hitomils.com/#hitomi',
+      '@id': 'https://makeupbyhitomi.com/#hitomi',
       '@type': 'Person',
       name: 'Hitomi Landazabal',
-      url: 'https://hitomils.com/about',
-      image: 'https://hitomils.com/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg',
+      url: 'https://makeupbyhitomi.com/about',
+      image: 'https://makeupbyhitomi.com/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg',
       jobTitle: 'Bridal Makeup & Hair Artist',
     },
     publisher: {
-      '@id': 'https://hitomils.com/#business',
+      '@id': 'https://makeupbyhitomi.com/#business',
       '@type': 'LocalBusiness',
       name: 'Hitomi — Bridal Makeup & Hair Artist',
-      url: 'https://hitomils.com',
+      url: 'https://makeupbyhitomi.com',
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://hitomils.com/blog/${slug}`,
+      '@id': `https://makeupbyhitomi.com/blog/${slug}`,
     },
     keywords: post.tags.join(', '),
     articleSection: post.category,

@@ -12,7 +12,7 @@ export const metadata: Metadata = buildMetadata({
   title: 'Services & Pricing',
   description:
     'Bridal makeup and wedding hairstyling services in Sapporo, Japan. Transparent pricing for bridal packages, special occasions, and add-ons. English-speaking makeup artist in Hokkaido.',
-  alternates: { canonical: 'https://hitomils.com/services' },
+  alternates: { canonical: 'https://makeupbyhitomi.com/services' },
 })
 
 function extractPrice(price: string): object {
@@ -42,7 +42,7 @@ const serviceSchema = {
       '@type': 'Service',
       name: s.title,
       description: s.description,
-      provider: { '@id': 'https://hitomils.com/#business' },
+      provider: { '@id': 'https://makeupbyhitomi.com/#business' },
       offers: extractPrice(s.price),
     },
   })),
