@@ -6,11 +6,11 @@ export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: 'Hitomi | Bridal Makeup & Hair Artist in Sapporo, Japan',
+      default: 'Hitomi | Bridal Makeup & Hair Artist in Hokkaido, Japan',
       template: '%s | Hitomi — Bridal Makeup & Hair',
     },
     description:
-      'Professional bridal makeup and wedding hairstyling in Sapporo, Japan. Serving international and Asian clients with elegant, timeless looks. Contact Hitomi for your special day.',
+      'Professional bridal makeup and wedding hairstyling in Hokkaido, Japan. Serving international and Asian clients with elegant, timeless looks. Contact Hitomi for your special day.',
     keywords: [
       'bridal makeup Sapporo',
       'wedding hair Sapporo',
@@ -29,8 +29,10 @@ export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
       siteName: 'Hitomi — Bridal Makeup & Hair Artist',
       images: [
         {
-          url: '/images/about/hitomi-landazabal-bridal-weddings-makeup-sapporo.jpg',
-          alt: 'Hitomi — Bridal Makeup & Hair Artist in Sapporo, Japan',
+          url: `${siteUrl}/images/home/bridal-makeup-veil-reclining-soft-gaze-sapporo.jpg`,
+          width: 2048,
+          height: 1365,
+          alt: 'Hitomi — Bridal Makeup & Hair Artist in Hokkaido, Japan',
         },
       ],
     },
