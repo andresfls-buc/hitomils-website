@@ -373,13 +373,6 @@ export const portfolioImages: GalleryImage[] = [
     category: 'hairstyling',
   },
   {
-    src: '/images/portfolio/bridesmaids-hair-makeup-blue-dresses-sapporo.jpg',
-    alt: 'Three bridesmaids with coordinated hair and makeup in blue dresses, Sapporo wedding',
-    width: 800,
-    height: 1067,
-    category: 'hairstyling',
-  },
-  {
     src: '/images/portfolio/bridesmaids-hairstyles-back-view-blue-dresses-hokkaido.jpg',
     alt: 'Bridesmaids hairstyles back view — braided updo, loose waves, and half-up, Hokkaido',
     width: 800,
@@ -565,13 +558,5 @@ export const featuredImages: GalleryImage[] = [
     width: 800,
     height: 1067,
     category: 'special-occasion',
-  },
-  // pos 5 — landscape: bridesmaids group
-  {
-    src: '/images/portfolio/bridesmaids-hair-makeup-blue-dresses-sapporo.jpg',
-    alt: 'Three bridesmaids with coordinated hair and makeup in blue dresses, Sapporo wedding',
-    width: 800,
-    height: 1067,
-    category: 'hairstyling',
   },
 ]
