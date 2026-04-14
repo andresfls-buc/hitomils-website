@@ -57,19 +57,18 @@ export default function GalleryClient({ images }: Props) {
       </div>
 
       {/* Grid */}
-      <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4 space-y-3 md:space-y-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         {filtered.map((image, i) => (
           <div
             key={image.src}
-            className="break-inside-avoid relative overflow-hidden cursor-pointer group"
+            className="relative overflow-hidden cursor-pointer group aspect-[3/4]"
             onClick={() => setLightboxIndex(i)}
           >
             <Image
               src={image.src}
               alt={image.alt}
-              width={image.width}
-              height={image.height}
-              className="w-full h-auto transition-transform duration-500 group-hover:scale-105"
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
