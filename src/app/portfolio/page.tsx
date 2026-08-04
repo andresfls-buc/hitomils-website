@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { buildMetadata } from '@/lib/metadata'
 import PageHero from '@/components/ui/PageHero'
-import GalleryClient from '@/components/portfolio/GalleryClient'
+import PortfolioMarquee from '@/components/portfolio/PortfolioMarquee'
 import { portfolioImages } from '@/data/portfolio'
 
 export const metadata: Metadata = buildMetadata({
@@ -40,16 +40,16 @@ export default function PortfolioPage() {
         subtitle="Selected Work"
       />
 
-      <section className="py-24 md:py-32 px-6">
+      <section className="pt-24 md:pt-32 px-6">
         <div className="max-w-6xl mx-auto">
           <p className="font-sans text-sm text-[#7A7570] font-light max-w-xl mb-12">
             A selection of bridal makeup, wedding hairstyling, and special occasion work
             from weddings across Hokkaido and beyond.
           </p>
-
-          <GalleryClient images={portfolioImages} />
         </div>
       </section>
+
+      <PortfolioMarquee />
     </>
   )
 }

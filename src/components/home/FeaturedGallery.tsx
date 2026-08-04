@@ -1,207 +1,245 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useLayoutEffect, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import Lightbox from 'yet-another-react-lightbox'
-import 'yet-another-react-lightbox/styles.css'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import SectionTitle from '@/components/ui/SectionTitle'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
 import { portfolioImages } from '@/data/portfolio'
+import type { GalleryImage } from '@/types'
 
-// ─── constants ────────────────────────────────────────────────────────────────
-const INTERVAL = 5000
+// useLayoutEffect warns during SSR (no DOM to lay out); fall back to useEffect there.
+// The effect body never actually runs on the server either way — this only silences the warning.
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
-// Shuffle once at module load so order is random every page visit
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
+// ─── seeded PRNG ────────────────────────────────────────────────────────────
+// Per-photo size/position must be computed at module scope with a fixed seed
+// so the server-rendered HTML and the client's first render produce identical
+// values — bare Math.random() here would cause a hydration mismatch.
+function createRng(seed: number) {
+  let s = seed
+  return () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648
 }
 
-const TOTAL = portfolioImages.length
+// ─── tuning constants ───────────────────────────────────────────────────────
+// Verified against the reference prototype (madewithgsap Effect 072) — keep as-is.
+const X_IN = 42 // vw — entry point (right)
+const X_OUT = -42 // vw — exit point (left)
+const Y_SPREAD = 13 // vh — max vertical offset from centre
+const DRIFT = 7 // vh — vertical drift across the journey
+const TRAVEL = 1 // duration of one photo's journey
+const IN_FLIGHT = 5.5 // photos on screen at once
+const STAGGER = TRAVEL / IN_FLIGHT
 
-// ─── Arrow button ─────────────────────────────────────────────────────────────
-function Arrow({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void }) {
+interface PhotoConfig {
+  image: GalleryImage
+  width: number // vh
+  height: number // vh
+  y0: number // vh
+  y1: number // vh
+  peak: number
+}
+
+function pickEven<T>(arr: T[], n: number): T[] {
+  if (n >= arr.length) return arr.slice(0, n)
+  const step = (arr.length - 1) / (n - 1)
+  return Array.from({ length: n }, (_, i) => arr[Math.round(i * step)])
+}
+
+function buildPhotos(
+  images: GalleryImage[],
+  seed: number,
+  hMin: number,
+  hMax: number
+): PhotoConfig[] {
+  const rnd = createRng(seed)
+  const between = (a: number, b: number) => a + rnd() * (b - a)
+
+  return images.map((image) => {
+    const portrait = rnd() > 0.35
+    const h = between(hMin, hMax) // vh
+    const width = h * (portrait ? 0.75 : 1.4) // size by height so nothing overflows the band
+    const y0 = between(-Y_SPREAD, Y_SPREAD)
+    const y1 = y0 + between(-DRIFT, DRIFT)
+    const peak = between(0.85, 1.15)
+    return { image, width, height: h, y0, y1, peak }
+  })
+}
+
+const DESKTOP_COUNT = 16
+const MOBILE_COUNT = 8
+
+// Desktop and mobile each get their own curated spread of photos and their own
+// size range (mobile is widened slightly so photos still read at small widths).
+const DESKTOP_PHOTOS = buildPhotos(pickEven(portfolioImages, DESKTOP_COUNT), 7, 24, 42)
+const MOBILE_PHOTOS = buildPhotos(pickEven(portfolioImages, MOBILE_COUNT), 7, 30, 50)
+
+// Reduced-motion fallback reuses the desktop selection as a plain grid.
+const GRID_IMAGES = DESKTOP_PHOTOS.map((p) => p.image)
+
+function PhotoStream({ photos, variant }: { photos: PhotoConfig[]; variant: 'desktop' | 'mobile' }) {
   return (
-    <button
-      onClick={onClick}
-      aria-label={dir === 'left' ? 'Previous' : 'Next'}
-      className="
-        absolute top-1/2 -translate-y-1/2 z-10
-        w-10 h-10 rounded-full
-        bg-white/90 backdrop-blur-sm shadow
-        flex items-center justify-center
-        text-[#2C2C2C] hover:text-[#A8796A]
-        transition-colors duration-200
-      "
-      style={{ [dir === 'left' ? 'left' : 'right']: '12px' }}
-    >
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-        {dir === 'left'
-          ? <path d="M11 3.5L6 9L11 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          : <path d="M7 3.5L12 9L7 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        }
-      </svg>
-    </button>
+    <>
+      {photos.map((photo, i) => (
+        <div
+          key={`${variant}-${photo.image.src}`}
+          className={`media-${variant} absolute top-1/2 left-1/2 opacity-0 will-change-transform shadow-[0_18px_50px_rgba(44,44,44,0.16)]`}
+          style={{ width: `${photo.width}vh`, height: `${photo.height}vh` }}
+        >
+          <Image
+            src={photo.image.src}
+            alt={photo.image.alt}
+            fill
+            sizes="(max-width: 768px) 60vw, 32vw"
+            className="object-cover"
+            loading={i < 3 ? 'eager' : 'lazy'}
+          />
+        </div>
+      ))}
+    </>
   )
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function FeaturedGallery() {
-  const [index,          setIndex]          = useState(0)
-  const [lightboxIdx,    setLightboxIdx]    = useState(-1)
-  const [lightboxCurrent, setLightboxCurrent] = useState(0)
-  const [paused,      setPaused]      = useState(false)
-  const [spv,         setSpv]         = useState(3)   // slides per view
+  const runwayRef = useRef<HTMLDivElement>(null)
+  const rowRef = useRef<HTMLDivElement>(null)
 
-  // Shuffle on the client only — avoids server/client mismatch that
-  // causes the lightbox to open the wrong photo
-  const [shuffled, setShuffled] = useState(portfolioImages)
-  const [slides,   setSlides]   = useState(() =>
-    portfolioImages.map((img) => ({ src: img.src, alt: img.alt, width: img.width, height: img.height }))
-  )
-  useEffect(() => {
-    const s = shuffle(portfolioImages)
-    setShuffled(s)
-    setSlides(s.map((img) => ({ src: img.src, alt: img.alt, width: img.width, height: img.height })))
+  useIsomorphicLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+
+    const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia()
+
+      mm.add(
+        {
+          isMobile: '(max-width: 767.98px)',
+          isDesktop: '(min-width: 768px)',
+          reduceMotion: '(prefers-reduced-motion: reduce)',
+        },
+        (context) => {
+          const conditions = context.conditions ?? {}
+          const isMobile = Boolean(conditions.isMobile)
+          const reduceMotion = Boolean(conditions.reduceMotion)
+
+          // Reduced motion: the CSS-only static grid is already visible; skip GSAP entirely.
+          if (reduceMotion) return
+
+          const row = rowRef.current
+          if (!row) return
+
+          const photos = isMobile ? MOBILE_PHOTOS : DESKTOP_PHOTOS
+          const els = Array.from(
+            row.querySelectorAll<HTMLDivElement>(isMobile ? '.media-mobile' : '.media-desktop')
+          )
+
+          // The timeline is scrubbed in full, from t=0 to its natural end, so
+          // the stream builds up from an empty screen and empties out again.
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: runwayRef.current,
+              start: 'top top',
+              end: 'bottom bottom',
+              pin: row,
+              scrub: 0.6,
+            },
+          })
+
+          photos.forEach((photo, i) => {
+            const el = els[i]
+            if (!el) return
+
+            gsap.set(el, {
+              xPercent: -50,
+              yPercent: -50,
+              scale: 0,
+              opacity: 1,
+              x: `${X_IN}vw`,
+              y: `${photo.y0}vh`,
+            })
+
+            const at = i * STAGGER
+
+            // horizontal travel — linear
+            tl.to(el, { x: `${X_OUT}vw`, y: `${photo.y1}vh`, duration: TRAVEL, ease: 'none' }, at)
+
+            // scale — bell curve: 0 → peak → 0
+            tl.to(
+              el,
+              {
+                keyframes: [
+                  { scale: photo.peak, duration: TRAVEL * 0.5, ease: 'power2.out' },
+                  { scale: 0, duration: TRAVEL * 0.5, ease: 'power2.in' },
+                ],
+                onUpdate() {
+                  el.style.zIndex = String(Math.round(Number(gsap.getProperty(el, 'scale')) * 1000))
+                },
+              },
+              at
+            )
+          })
+        }
+      )
+      // matchMedia + context automatically revert all tweens/ScrollTriggers created above
+      // whenever the breakpoint changes or this component unmounts.
+    }, runwayRef)
+
+    return () => ctx.revert()
   }, [])
-
-  // maxIndex = last valid starting position so we never show blank slots
-  const maxIndex = TOTAL - spv
-
-  // ── Keep spv in sync with viewport (matches Tailwind sm / lg) ──────────────
-  useEffect(() => {
-    const update = () =>
-      setSpv(window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
-
-  // ── Clamp index when spv changes ───────────────────────────────────────────
-  useEffect(() => {
-    setIndex((i) => Math.min(i, Math.max(0, maxIndex)))
-  }, [maxIndex])
-
-  // ── Navigation ──────────────────────────────────────────────────────────────
-  const next = useCallback(
-    () => setIndex((i) => (i >= maxIndex ? 0 : i + 1)),
-    [maxIndex],
-  )
-  const prev = useCallback(
-    () => setIndex((i) => (i <= 0 ? maxIndex : i - 1)),
-    [maxIndex],
-  )
-
-  const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const handleArrow = useCallback(
-    (dir: 'prev' | 'next') => {
-      // pause immediately
-      setPaused(true)
-      dir === 'prev' ? prev() : next()
-
-      // clear any existing resume timer, then restart after 5s
-      if (resumeTimer.current) clearTimeout(resumeTimer.current)
-      resumeTimer.current = setTimeout(() => setPaused(false), 5000)
-    },
-    [prev, next],
-  )
-
-  // ── Auto-advance ────────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (paused) return
-    const id = setInterval(next, INTERVAL)
-    return () => clearInterval(id)
-  }, [paused, next])
-
-  /*
-   * translateX formula:
-   *   The track has no explicit width, so its CSS width = its containing block
-   *   (the overflow-hidden wrapper) = W.
-   *   Each item has width W/spv (via Tailwind responsive classes).
-   *   translateX % is relative to the element itself (the track) whose width = W.
-   *   To advance 1 slide → move W/spv → (100/spv)% of W.
-   *   So: translateX = -(index × 100/spv)%
-   */
-  const translateX = -(index * (100 / spv))
 
   return (
     <section className="py-24 md:py-32 px-6">
       <div className="max-w-6xl mx-auto">
-
-        {/* ── Header ─────────────────────────────────────────────────────────── */}
         <Reveal>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+          <div className="mb-12">
             <SectionTitle subtitle="Portfolio" title="Selected Work" />
-            <Button href="/portfolio" variant="ghost" size="sm">Full Portfolio</Button>
           </div>
         </Reveal>
-
-        {/* ── Carousel ───────────────────────────────────────────────────────── */}
-        <div className="relative">
-          {/* Clipping window */}
-          <div className="overflow-hidden">
-            {/* Sliding track */}
-            <div
-              className="flex flex-nowrap transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
-              style={{ transform: `translateX(${translateX}%)` }}
-            >
-              {shuffled.map((img, i) => (  // shuffled is now client-only state
-                <div
-                  key={img.src}
-                  // w-full on mobile (spv=1), w-1/2 on sm (spv=2), w-1/3 on lg (spv=3)
-                  className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 px-1.5 cursor-pointer group"
-                  onClick={() => { setLightboxIdx(i); setPaused(true) }}
-                >
-                  <div className="relative aspect-[3/4] overflow-hidden bg-[#EDD9D1]">
-                    <Image
-                      src={img.src}
-                      alt={img.alt}
-                      fill
-                      loading={i < 6 ? 'eager' : 'lazy'}
-                      className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-300" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Arrows */}
-          <Arrow dir="left"  onClick={() => handleArrow('prev')} />
-          <Arrow dir="right" onClick={() => handleArrow('next')} />
-        </div>
-
-        {/* ── Counter ─────────────────────────────────────────────────────────── */}
-        <p className="mt-5 text-right font-sans text-[11px] tracking-widest text-[#B8A080]">
-          {String(index + 1).padStart(2, '0')} / {String(maxIndex + 1).padStart(2, '0')}
-        </p>
-
       </div>
 
-      {/* ── Lightbox ─────────────────────────────────────────────────────────── */}
-      <Lightbox
-        open={lightboxIdx >= 0}
-        index={lightboxIdx}
-        on={{
-          view: ({ index: i }) => setLightboxCurrent(i),
-        }}
-        close={() => {
-          setLightboxIdx(-1)
-          setPaused(false)
-          // Sync carousel to the photo the user last viewed in the lightbox
-          setIndex(Math.min(lightboxCurrent, maxIndex))
-        }}
-        slides={slides}
-        styles={{ container: { backgroundColor: 'rgba(0,0,0,0.95)' } }}
-      />
+      {/* ── Pinned photo stream (motion-safe) ─────────────────────────────── */}
+      <div
+        ref={runwayRef}
+        className="pin-height relative h-[300vh] max-md:h-[200vh] motion-reduce:hidden"
+      >
+        <div ref={rowRef} className="relative h-screen overflow-hidden">
+          <div className="contents max-md:hidden">
+            <PhotoStream photos={DESKTOP_PHOTOS} variant="desktop" />
+          </div>
+          <div className="contents md:hidden">
+            <PhotoStream photos={MOBILE_PHOTOS} variant="mobile" />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Static grid fallback (motion-reduce) ──────────────────────────── */}
+      <div className="hidden motion-reduce:block max-w-6xl mx-auto px-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {GRID_IMAGES.map((img) => (
+            <div key={img.src} className="relative aspect-[3/4] overflow-hidden bg-[#EDD9D1]">
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                loading="lazy"
+                className="object-cover"
+                sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 23vw"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── CTA, below the stream ─────────────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-6 mt-16 flex justify-center">
+        <Reveal>
+          <Button href="/portfolio" variant="ghost" size="sm">
+            Full Portfolio
+          </Button>
+        </Reveal>
+      </div>
     </section>
   )
 }

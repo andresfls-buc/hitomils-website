@@ -90,10 +90,57 @@ Desktop (`min-width: 768px`):
   `end: 'bottom bottom'`, `scrub: true`, `pinSpacing: false`)
 - per row: `gsap.to(row, { x: -overflow[i], ease: 'none', scrollTrigger: <same config> })`
 
-Mobile (`max-width: 767px`): the ScrollTrigger is never created. Rows become
-native `overflow-x: auto` swipe strips with `scroll-snap-type: x mandatory`,
-row height ~38vh, hidden scrollbars. The page scrolls vertically as normal —
-no pin, no scroll hijack.
+Mobile (`max-width: 767px`): **two pinned vertical parallax columns** — the
+same mechanic as desktop turned 90°. The band is pinned at `h-screen` and each
+column travels exactly its own vertical overflow (`columnHeight - windowHeight`),
+so the section holds until every photo has passed through.
+
+The columns must be **uneven in height**, for the same reason the rows must be
+uneven in width: equal heights mean equal overflow, both columns travelling the
+same distance, and no parallax at all. A 0.58 / 0.42 height budget yields 41/31
+images at 8956px / 6658px, and travel of 8112px / 5814px — a 1.4x speed ratio.
+
+`items-start` on the container is required: the default `stretch` would clamp
+each column to the window height, leaving nothing to travel.
+
+Two earlier attempts were wrong and are recorded here so they aren't repeated:
+
+1. Horizontal side-swipe strips — rejected in review.
+2. Unpinned columns drifting a fixed ±120px across the whole section. The
+   transforms genuinely changed, but 240px of travel spread over a 9480px page
+   is ~21px of relative shift per screen: invisible. **A fixed drift spread
+   over a long section always dilutes to nothing — travel has to be
+   proportional to the content, which is what "own overflow" gives.**
+
+Cost of the pin: ~8100px, roughly 9.6 phone screens, which is the honest price
+of holding until all 72 photos have shown.
+
+### Layout switching
+
+Rows and columns group the photos differently, so this cannot be a CSS-only
+swap — the markup itself changes. `useSyncExternalStore` over
+`matchMedia('(min-width: 768px)')` drives it, with a server snapshot of `false`
+so the mobile column layout is what gets server-rendered. All 72 images and
+their alt text are present in the SSR HTML either way.
+
+**The `section` / `pin-height` / `container` wrappers must stay mounted at every
+breakpoint**, with only their classes and children changing. ScrollTrigger's
+`pin` wraps the container in a `.pin-spacer` div that React does not know
+about; letting React unmount that subtree on a breakpoint change crashed the
+page outright.
+
+## Resize behaviour
+
+Every measurement must be function-based and re-evaluated on refresh:
+`end: () => '+=' + max(overflows)`, `x: () => -overflows[i]`,
+`invalidateOnRefresh: true`, and `onRefreshInit` re-measuring. ScrollTrigger
+refreshes on window resize automatically.
+
+Baking the values in at mount is a real, observed bug: after resizing
+1440 → 1024 without reloading, the rows kept their old travel distance and
+overshot by 1384 / 1084 / 634px, dragging the last image clear off the left
+edge of the screen. Let ScrollTrigger own the pin spacing rather than setting
+an inline height on `.pin-height`, which otherwise goes stale the same way.
 
 ## Styling
 
