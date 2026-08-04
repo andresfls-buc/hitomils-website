@@ -29,7 +29,10 @@
   box-sizing: border-box;
 }
 
-html {
+/* Disabled on any page that contains the pinned GSAP ScrollTrigger photo-stream
+   (FeaturedGallery) — native smooth scrolling fights ScrollTrigger's scrub and
+   causes visible jitter/lag. Smooth anchor scrolling still applies everywhere else. */
+html:not(:has(.pin-height)) {
   scroll-behavior: smooth;
 }
 
