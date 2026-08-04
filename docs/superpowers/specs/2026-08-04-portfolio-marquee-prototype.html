@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Effect 065 prototype — Hitomi portfolio</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#FAF7F4; color:#2C2C2C; font-family:system-ui,sans-serif; }
+
+  .spacer { height:100vh; display:grid; place-items:center; }
+  .spacer p { font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:#7A7570; }
+
+  .mwg065 .pin-height { position:relative; }
+  .mwg065 .container {
+    height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    gap:var(--gap);
+    overflow:hidden;
+  }
+  .mwg065 .medias {
+    display:flex; gap:var(--gap);
+    height:var(--rowH);
+    flex:none;
+    will-change:transform;
+  }
+  .mwg065 .media {
+    height:100%; width:auto; flex:none;
+    object-fit:cover; display:block;
+    border-radius:2px;
+    background:#EDE7E1;
+  }
+
+  :root { --gap:12px; --rowH:calc((100vh - 4 * 12px) / 3); }
+
+  /* mobile: free-swipe strips, no pin */
+  @media (max-width: 767px) {
+    .mwg065 .container { height:auto; overflow:visible; padding:48px 0; }
+    .mwg065 .medias {
+      overflow-x:auto; overflow-y:hidden;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+      height:38vh;
+      padding:0 16px;
+    }
+    .mwg065 .medias::-webkit-scrollbar { display:none; }
+    .mwg065 .media { scroll-snap-align:center; }
+  }
+
+  #hud {
+    position:fixed; top:8px; left:8px; z-index:99;
+    background:rgba(44,44,44,.88); color:#fff;
+    font:11px/1.5 ui-monospace,monospace; padding:8px 10px; border-radius:4px;
+    white-space:pre;
+  }
+</style>
+</head>
+<body>
+
+<div class="spacer"><p>scroll down</p></div>
+
+<section class="mwg065">
+  <div class="pin-height">
+    <div class="container">
+      <div class="medias" data-row="0"></div>
+      <div class="medias" data-row="1"></div>
+      <div class="medias" data-row="2"></div>
+    </div>
+  </div>
+</section>
+
+<div class="spacer"><p>after the marquee</p></div>
+
+<div id="hud">booting…</div>
+
+<script src="gsap.min.js"></script>
+<script src="ScrollTrigger.min.js"></script>
+<script>
+const hud = document.getElementById('hud')
+
+// ── Row distribution ────────────────────────────────────────────────────────
+// The parallax comes ENTIRELY from the three rows having different overflow
+// widths. An even 26/26/25 split makes all three overflows ~equal and the
+// effect reads as one flat marquee. So: deliberately uneven counts, and the
+// wide (3:2) images are concentrated in row 0 to widen it further.
+const RATIO = [0.42, 0.34, 0.24]   // share of total width per row
+
+fetch('imgs.json').then(r => r.json()).then(imgs => {
+  // sort so landscape images cluster toward the front, then deal by width budget
+  const wide = imgs.filter(i => i.w > i.h)
+  const tall = imgs.filter(i => i.w <= i.h)
+
+  // relative width unit per image at a common row height
+  const unit = i => i.w / i.h
+  const total = imgs.reduce((s,i) => s + unit(i), 0)
+
+  const rows = [[],[],[]]
+  const budget = RATIO.map(r => r * total)
+  const used = [0,0,0]
+
+  // deal wide images first, weighted to row 0, then fill with tall ones
+  const order = [...wide, ...tall]
+  // interleave so each row gets visual variety rather than blocks of one type
+  let ri = 0
+  for (const img of order) {
+    // pick the row that is furthest from its budget
+    let best = 0, bestGap = -Infinity
+    for (let r = 0; r < 3; r++) {
+      const gap = budget[r] - used[r]
+      if (gap > bestGap) { bestGap = gap; best = r }
+    }
+    rows[best].push(img)
+    used[best] += unit(img)
+  }
+
+  rows.forEach((list, r) => {
+    const el = document.querySelector(`.medias[data-row="${r}"]`)
+    el.innerHTML = list.map(i =>
+      `<img class="media" src="${i.src}" alt="${i.alt.replace(/"/g,'&quot;')}" loading="eager" decoding="async">`
+    ).join('')
+  })
+
+  hud.textContent = `dealt: ${rows.map(r=>r.length).join(' / ')}`
+  waitForImages().then(init)
+})
+
+function waitForImages () {
+  const imgs = [...document.images]
+  return Promise.all(imgs.map(img =>
+    img.complete ? Promise.resolve() : new Promise(res => {
+      img.addEventListener('load', res, {once:true})
+      img.addEventListener('error', res, {once:true})
+    })
+  ))
+}
+
+function init () {
+  gsap.registerPlugin(ScrollTrigger)
+
+  const mm = gsap.matchMedia()
+
+  mm.add('(min-width: 768px)', () => {
+    const pinHeight = document.querySelector('.pin-height')
+    const container = document.querySelector('.container')
+    const rows = gsap.utils.toArray('.medias')
+
+    // Each row travels exactly its own overflow → different distances over the
+    // same scroll = different speeds = the parallax.
+    const overflows = rows.map(r => Math.max(0, r.scrollWidth - window.innerWidth))
+    const maxOverflow = Math.max(...overflows)
+
+    pinHeight.style.height = `calc(100vh + ${maxOverflow}px)`
+
+    const st = {
+      trigger: pinHeight,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: true,
+    }
+
+    ScrollTrigger.create({ ...st, pin: container, pinSpacing: false })
+
+    rows.forEach((row, i) => {
+      gsap.to(row, { x: -overflows[i], ease: 'none', scrollTrigger: st })
+    })
+
+    hud.textContent =
+      `viewport ${window.innerWidth}\n` +
+      rows.map((r,i) =>
+        `row${i}: ${r.children.length} imgs  w=${Math.round(r.scrollWidth)}  overflow=${Math.round(overflows[i])}`
+      ).join('\n') +
+      `\npin distance: ${Math.round(maxOverflow)}px` +
+      `\nspeed ratio: ${overflows.map(o => (o/Math.min(...overflows.filter(Boolean))).toFixed(2)).join(' : ')}`
+
+    window.__probe = () => ({
+      overflows,
+      maxOverflow,
+      x: rows.map(r => Math.round(gsap.getProperty(r, 'x'))),
+    })
+
+    return () => { pinHeight.style.height = '' }
+  })
+
+  window.__ready = true
+
+  // Screenshot harness: ?scroll=0.35 jumps to 35% through the pinned section
+  // with scrub resolved instantly, so a plain headless capture is accurate.
+  const q = new URLSearchParams(location.search)
+  if (q.has('scroll')) {
+    ScrollTrigger.refresh()
+    const pinHeight = document.querySelector('.pin-height')
+    const top = pinHeight.offsetTop
+    const dist = pinHeight.offsetHeight - window.innerHeight
+    window.scrollTo(0, top + dist * parseFloat(q.get('scroll')))
+    // resolve scrub immediately instead of easing toward the target
+    ScrollTrigger.getAll().forEach(t => t.getTween && t.getTween() && t.getTween().progress(1))
+    gsap.ticker.tick()
+    if (q.has('hidehud')) hud.style.display = 'none'
+  }
+}
+</script>
+</body>
+</html>
