@@ -95,7 +95,8 @@ end.
 - **Images** are placed by sampling the live path:
   `getPointAtLength(mid)` for position, and the angle between
   `getPointAtLength(mid ± 1)` for rotation, so images tilt with the wave exactly
-  as the letters do.
+  as the letters do. Past either end of the path the position must be
+  **extrapolated along the end tangent**, never clamped — see pitfall 5.
 
 Because both read from the same `#line` element, text and images stay locked
 together no matter how far the path is bent.
@@ -152,7 +153,7 @@ centred band — this is why the reference describes "a viewport-sized container
 - `#wave` is never visible — `fill: none`, `opacity: 0`. It exists only as a
   morph target.
 
-## Four pitfalls, two caught by the prototype and two only in the real app
+## Five pitfalls that fail silently
 
 Each of these produces silently wrong output rather than an error, so they are
 called out explicitly:
@@ -173,6 +174,11 @@ called out explicitly:
    other. `useTiltWheel` gets away with matchMedia only because it also carries
    `isMobile`/`isDesktop`, one of which always matches. Use a plain
    `window.matchMedia(...).matches` guard here.
+5. **Never clamp an image's position with `getPointAtLength()`.** It clamps to
+   the path's ends, so once an image's centre passes either end it parks there
+   instead of travelling off-screen. Text is unaffected, so the symptom is the
+   sentence flowing away normally while the photographs pile up at the left edge.
+   Extrapolate along the end tangent for the overshoot.
 4. **Read `trigger.progress` inside the render loop, not cached from `onUpdate`.**
    `onUpdate` fires only when the scroll *changes*. Since `setup()` waits on
    `document.fonts.ready`, the trigger can be created when the visitor is already
