@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { buildMetadata } from '@/lib/metadata'
 import HeroSection from '@/components/home/HeroSection'
 import IntroSection from '@/components/home/IntroSection'
+import WaveBendPromise from '@/components/home/WaveBendPromise'
 import ServicesPreview from '@/components/home/ServicesPreview'
 import FeaturedGallery from '@/components/home/FeaturedGallery'
 import TestimonialsSection from '@/components/home/TestimonialsSection'
@@ -62,6 +63,7 @@ export default function HomePage() {
       />
       <HeroSection />
       <IntroSection />
+      <WaveBendPromise />
       <ServicesPreview />
       <FeaturedGallery />
       <TestimonialsSection />
