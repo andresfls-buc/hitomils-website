@@ -115,15 +115,11 @@ export function useWaveBend(
         let cancelled = false
         let teardown: (() => void) | null = null
 
-        // Text widths come from getComputedTextLength(), which is wrong until the
-        // webfont has actually loaded. Measuring early lays the whole train out
-        // with fallback-font widths and never corrects itself.
-        document.fonts.ready.then(() => {
-          if (cancelled) return
-          teardown = setup()
-        })
-
-        function setup() {
+        // An arrow function, deliberately: TypeScript keeps the non-null
+        // narrowing of `line`/`track`/`stage` above inside a closure created
+        // after the guard, but not inside a hoisted `function setup()`, which
+        // it must assume could run before the guard.
+        const setup = () => {
           // ── measure the train ─────────────────────────────────────────────
           const segments: Segment[] = Array.from(track.children).map((node) => {
             const el = node as SVGGraphicsElement
@@ -211,6 +207,14 @@ export function useWaveBend(
             trigger.kill()
           }
         }
+
+        // Text widths come from getComputedTextLength(), which is wrong until the
+        // webfont has actually loaded. Measuring early lays the whole train out
+        // with fallback-font widths and never corrects itself.
+        document.fonts.ready.then(() => {
+          if (cancelled) return
+          teardown = setup()
+        })
 
         // gsap.context reverts tweens and ScrollTriggers, but not the ticker
         // callback or the pending fonts promise — those must be handled here.
@@ -541,4 +545,8 @@ Read before starting. Each of these produces silently wrong output rather than a
 4. **Measure text only after `document.fonts.ready`.** `getComputedTextLength()` returns fallback-font widths until the webfont loads, and the train is laid out once — it never self-corrects.
 5. **Re-read `getTotalLength()` every frame.** Morphing changes the path's length; caching it makes the images drift away from the text as the line bends.
 6. **`MAX_BEND` is 0.35, not 1.** At full morph progress the wave is violently over-bent and leaves the band.
-7. **Do not add `z-index`, `will-change`, or transforms to `#track` or its children** beyond the `transform` attribute the hook writes on images. The text is positioned entirely by `startOffset`.
+7. **`setup` must stay a `const` arrow function, declared before it is used.**
+   TypeScript preserves the non-null narrowing of `line`/`track`/`stage` inside a
+   closure created after the guard, but NOT inside a hoisted `function setup()` —
+   that form fails with `TS18047: 'line' is possibly 'null'` on six lines.
+8. **Do not add `z-index`, `will-change`, or transforms to `#track` or its children** beyond the `transform` attribute the hook writes on images. The text is positioned entirely by `startOffset`.
