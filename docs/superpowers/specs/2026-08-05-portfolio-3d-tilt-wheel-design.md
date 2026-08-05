@@ -185,8 +185,9 @@ Verified by screenshot: the wheel reads clearly on cream with this shadow.
 ## Rendering and lifecycle
 
 - A **single** `gsap.ticker` callback writes every transform. No per-tile
-  `requestAnimationFrame`, no per-frame `gsap.set` object allocation — cache one
-  `gsap.quickSetter(el, 'transform')` per tile at setup.
+  `requestAnimationFrame`, and no per-frame `gsap.set` — since we compose the
+  whole transform string ourselves, write it straight to `el.style.transform`.
+  That is both the fastest path and the least ambiguous one.
 - All setup lives inside `gsap.context(…, runwayRef)` and `gsap.matchMedia()`, so
   breakpoint changes and unmount revert every tween, ScrollTrigger, and listener.
   The ticker callback and the `pointermove` listener must be removed explicitly in
