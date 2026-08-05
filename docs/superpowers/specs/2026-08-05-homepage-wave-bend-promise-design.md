@@ -154,7 +154,7 @@ centred band — this is why the reference describes "a viewport-sized container
 
 ## Four pitfalls, two caught by the prototype and two only in the real app
 
-These both produce silently wrong output rather than an error, so they are
+Each of these produces silently wrong output rather than an error, so they are
 called out explicitly:
 
 1. **The `<svg>` must be `flex: 0 0 auto`.** The stage centres its child with
