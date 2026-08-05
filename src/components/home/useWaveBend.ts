@@ -34,12 +34,14 @@ export function useWaveBend(
   useIsomorphicLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger, MorphSVGPlugin)
 
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia()
-
-      mm.add({ reduceMotion: '(prefers-reduced-motion: reduce)' }, (context) => {
-        // Reduced motion: the static fallback is already visible; skip GSAP entirely.
-        if (context.conditions?.reduceMotion) return
+    const ctx = gsap.context(
+      () => {
+        // Deliberately NOT gsap.matchMedia(). A matchMedia context is only
+        // activated when at least one of its queries matches (gsap-core.js:
+        // `anyMatch && matches.push(c)`), so a lone always-false
+        // prefers-reduced-motion query means the callback never runs at all.
+        // The static fallback is CSS-driven anyway, so a plain guard is correct.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
         const line = lineRef.current
         const track = trackRef.current
@@ -85,7 +87,6 @@ export function useWaveBend(
             ease: 'none',
           })
 
-          let progress = 0
           let bend = 0
           let targetBend = 0
 
@@ -96,7 +97,6 @@ export function useWaveBend(
             pin: stage,
             scrub: 0.5,
             onUpdate: (self) => {
-              progress = self.progress
               targetBend =
                 Math.min(Math.abs(self.getVelocity()) / VELOCITY_FULL, 1) * MAX_BEND
             },
@@ -108,7 +108,11 @@ export function useWaveBend(
 
             // Re-read every frame: morphing changes the path's length.
             const length = line.getTotalLength()
-            const head = baseLength - progress * travel
+            // Read progress from the trigger every frame rather than caching it
+            // from onUpdate: onUpdate only fires when the scroll CHANGES, so a
+            // trigger created while already in range (slow font load, or a
+            // reload part-way down the page) would stay parked at 0.
+            const head = baseLength - trigger.progress * travel
 
             for (const seg of segments) {
               const at = head + seg.at
@@ -134,6 +138,11 @@ export function useWaveBend(
           }
 
           gsap.ticker.add(render)
+
+          // setup() runs off document.fonts.ready, which can land after layout
+          // has settled; re-measure so start/end are right.
+          ScrollTrigger.refresh()
+
           render() // paint the first frame before the browser does
 
           return () => {
@@ -157,8 +166,9 @@ export function useWaveBend(
           cancelled = true
           teardown?.()
         }
-      })
-    }, runwayRef)
+      },
+      runwayRef
+    )
 
     return () => ctx.revert()
   }, [runwayRef, stageRef, lineRef, trackRef])
