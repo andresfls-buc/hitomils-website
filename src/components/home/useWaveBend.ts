@@ -49,133 +49,119 @@ export function useWaveBend(
         const runway = runwayRef.current
         if (!line || !track || !stage || !runway) return
 
-        let cancelled = false
-        let teardown: (() => void) | null = null
+        const segments: Segment[] = Array.from(track.children).map((node) => {
+          const el = node as SVGGraphicsElement
+          const isText = el.tagName === 'text'
+          return {
+            el,
+            textPath: isText ? (el.firstElementChild as SVGTextPathElement) : null,
+            width: IMG_SIZE,
+            at: 0,
+          }
+        })
 
-        // An arrow function, deliberately: TypeScript keeps the non-null
-        // narrowing of `line`/`track`/`stage` above inside a closure created
-        // after the guard, but not inside a hoisted `function setup()`, which
-        // it must assume could run before the guard.
-        const setup = () => {
-          // ── measure the train ─────────────────────────────────────────────
-          const segments: Segment[] = Array.from(track.children).map((node) => {
-            const el = node as SVGGraphicsElement
-            const isText = el.tagName === 'text'
-            return {
-              el,
-              textPath: isText ? (el.firstElementChild as SVGTextPathElement) : null,
-              width: isText ? (el as SVGTextContentElement).getComputedTextLength() : IMG_SIZE,
-              at: 0,
-            }
-          })
-
+        // Lay the segments end to end into a "train" and return its total length.
+        //
+        // This re-runs every frame rather than once at setup, and that is
+        // deliberate. getComputedTextLength() reports fallback-font widths until
+        // the webfont is actually applied to the SVG text, and document.fonts.ready
+        // is NOT a reliable barrier for that — it resolves for the fonts loaded so
+        // far, which on a slow phone can be before Cormorant reaches these <text>
+        // nodes. Measuring once loses that race silently: the train is laid out
+        // with the wrong widths and never corrects itself, so segments overlap.
+        // Three getComputedTextLength() calls per frame is a rounding error next to
+        // the getPointAtLength() calls below.
+        const measure = () => {
           let cursor = 0
           for (const seg of segments) {
+            seg.width = seg.textPath
+              ? (seg.el as SVGTextContentElement).getComputedTextLength()
+              : IMG_SIZE
             seg.at = cursor
             cursor += seg.width + GAP
           }
-          const trainLength = cursor - GAP
+          return cursor - GAP
+        }
 
-          const baseLength = line.getTotalLength()
+        const baseLength = line.getTotalLength()
+
+        // ── the bend is a paused morph we scrub by hand ──────────────────────
+        const morph = gsap.to(line, {
+          morphSVG: { shape: '#wave' },
+          duration: 1,
+          paused: true,
+          ease: 'none',
+        })
+
+        let bend = 0
+        let targetBend = 0
+
+        const trigger = ScrollTrigger.create({
+          trigger: runway,
+          start: 'top top',
+          end: 'bottom bottom',
+          pin: stage,
+          scrub: 0.5,
+          onUpdate: (self) => {
+            targetBend = Math.min(Math.abs(self.getVelocity()) / VELOCITY_FULL, 1) * MAX_BEND
+          },
+        })
+
+        const render = () => {
+          bend += (targetBend - bend) * BEND_EASE
+          morph.progress(bend)
+
+          const trainLength = measure()
           const travel = baseLength + trainLength
 
-          // ── the bend is a paused morph we scrub by hand ────────────────────
-          const morph = gsap.to(line, {
-            morphSVG: { shape: '#wave' },
-            duration: 1,
-            paused: true,
-            ease: 'none',
-          })
+          // Re-read every frame: morphing changes the path's length.
+          const length = line.getTotalLength()
+          // Read progress from the trigger every frame rather than caching it
+          // from onUpdate: onUpdate only fires when the scroll CHANGES, so a
+          // trigger created while already in range would stay parked at 0.
+          const head = baseLength - trigger.progress * travel
 
-          let bend = 0
-          let targetBend = 0
+          for (const seg of segments) {
+            const at = head + seg.at
 
-          const trigger = ScrollTrigger.create({
-            trigger: runway,
-            start: 'top top',
-            end: 'bottom bottom',
-            pin: stage,
-            scrub: 0.5,
-            onUpdate: (self) => {
-              targetBend =
-                Math.min(Math.abs(self.getVelocity()) / VELOCITY_FULL, 1) * MAX_BEND
-            },
-          })
-
-          const render = () => {
-            bend += (targetBend - bend) * BEND_EASE
-            morph.progress(bend)
-
-            // Re-read every frame: morphing changes the path's length.
-            const length = line.getTotalLength()
-            // Read progress from the trigger every frame rather than caching it
-            // from onUpdate: onUpdate only fires when the scroll CHANGES, so a
-            // trigger created while already in range (slow font load, or a
-            // reload part-way down the page) would stay parked at 0.
-            const head = baseLength - trigger.progress * travel
-
-            for (const seg of segments) {
-              const at = head + seg.at
-
-              if (seg.textPath) {
-                // Glyphs falling outside the path simply are not rendered, which
-                // is what makes segments enter and leave the band.
-                seg.textPath.setAttribute('startOffset', String(at))
-                continue
-              }
-
-              // getPointAtLength() clamps to the path's ends, so an image whose
-              // centre has travelled past either end would park there instead of
-              // continuing off-screen — the text keeps flowing (glyphs outside
-              // the path just don't render) while the photos pile up at x=0.
-              // Extrapolate along the end tangent for the overshoot instead.
-              const mid = at + seg.width / 2
-              const onPath = Math.max(0, Math.min(length, mid))
-              const before = line.getPointAtLength(Math.max(0, onPath - 1))
-              const after = line.getPointAtLength(Math.min(length, onPath + 1))
-              const anchor = line.getPointAtLength(onPath)
-              const rad = Math.atan2(after.y - before.y, after.x - before.x)
-              const overshoot = mid - onPath
-
-              const x = anchor.x + Math.cos(rad) * overshoot
-              const y = anchor.y + Math.sin(rad) * overshoot
-              const deg = (rad * 180) / Math.PI
-
-              seg.el.setAttribute(
-                'transform',
-                `translate(${x} ${y}) rotate(${deg}) translate(${-seg.width / 2} ${-IMG_SIZE / 2})`
-              )
+            if (seg.textPath) {
+              // Glyphs falling outside the path simply are not rendered, which
+              // is what makes segments enter and leave the band.
+              seg.textPath.setAttribute('startOffset', String(at))
+              continue
             }
-          }
 
-          gsap.ticker.add(render)
+            // getPointAtLength() clamps to the path's ends, so an image whose
+            // centre has travelled past either end would park there instead of
+            // continuing off-screen — the text keeps flowing (glyphs outside
+            // the path just don't render) while the photos pile up at x=0.
+            // Extrapolate along the end tangent for the overshoot instead.
+            const mid = at + seg.width / 2
+            const onPath = Math.max(0, Math.min(length, mid))
+            const before = line.getPointAtLength(Math.max(0, onPath - 1))
+            const after = line.getPointAtLength(Math.min(length, onPath + 1))
+            const anchor = line.getPointAtLength(onPath)
+            const rad = Math.atan2(after.y - before.y, after.x - before.x)
+            const overshoot = mid - onPath
 
-          // setup() runs off document.fonts.ready, which can land after layout
-          // has settled; re-measure so start/end are right.
-          ScrollTrigger.refresh()
+            const x = anchor.x + Math.cos(rad) * overshoot
+            const y = anchor.y + Math.sin(rad) * overshoot
+            const deg = (rad * 180) / Math.PI
 
-          render() // paint the first frame before the browser does
-
-          return () => {
-            gsap.ticker.remove(render)
-            morph.kill()
-            trigger.kill()
+            seg.el.setAttribute(
+              'transform',
+              `translate(${x} ${y}) rotate(${deg}) translate(${-seg.width / 2} ${-IMG_SIZE / 2})`
+            )
           }
         }
 
-        // Text widths come from getComputedTextLength(), which is wrong until the
-        // webfont has actually loaded. Measuring early lays the whole train out
-        // with fallback-font widths and never corrects itself.
-        document.fonts.ready.then(() => {
-          if (cancelled) return
-          teardown = setup()
-        })
+        gsap.ticker.add(render)
+        render() // paint the first frame before the browser does
 
         // gsap.context reverts tweens and ScrollTriggers, but not the ticker
-        // callback or the pending fonts promise — those must be handled here.
+        // callback — that must be removed by hand.
         return () => {
-          cancelled = true
-          teardown?.()
+          gsap.ticker.remove(render)
         }
       },
       runwayRef

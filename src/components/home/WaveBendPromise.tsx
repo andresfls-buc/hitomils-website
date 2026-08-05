@@ -20,7 +20,7 @@ const PHOTOS = [
   },
 ]
 
-const SENTENCE = 'It’s your day — I’ll take care of everything else — you just enjoy it.'
+const SENTENCE = 'It’s your day — I’ll take care of everything — you just enjoy it.'
 
 // The <text> elements are measured by the hook, so their styling must be on the
 // element itself rather than inherited through a class that might not apply
@@ -78,7 +78,7 @@ export default function WaveBendPromise() {
               />
               <text fill="#2C2C2C" fontSize="300" fontWeight="300" style={textStyle}>
                 <textPath href="#line" startOffset="0" textAnchor="start">
-                  I’ll take care of everything else
+                  I’ll take care of everything
                 </textPath>
               </text>
               <image
