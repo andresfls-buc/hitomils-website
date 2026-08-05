@@ -125,7 +125,7 @@ seen in the reference video.
 | | desktop (≥768px) | mobile |
 |---|---|---|
 | runway height | 200vh | 200vh |
-| pinned stage height | 60vh | 40vh |
+| pinned stage height | 100vh | 100vh |
 | svg width | 110vw | 170vw |
 | font-size (user units) | 300 | 300 |
 | image size (user units) | 280 × 280 | 280 × 280 |
@@ -134,6 +134,12 @@ seen in the reference video.
 Everything scales off the svg's rendered width, since the viewBox is fixed at
 `0 0 2577 391`. At 110vw on a 1440px viewport the type renders at ~184px, which
 matches the reference's proportion of roughly a quarter of the band height.
+
+**The stage must be viewport-height, not band-height.** A pinned element sticks
+to the *top* of the viewport, so a 60vh stage would leave the line hanging at the
+top of the screen with 40vh of empty pin-spacer below it. Making the stage
+`h-screen` and centring the svg inside it with flexbox produces the intended
+centred band — this is why the reference describes "a viewport-sized container".
 
 ## Visual treatment
 
@@ -165,7 +171,7 @@ called out explicitly:
 ```
 <section>                                          ← cream, no padding of its own
   <div class="pin-height">                         ← 200vh runway, motion-reduce:hidden
-    <div class="stage">                            ← 60vh / 40vh, pinned, overflow-hidden
+    <div class="stage">                            ← h-screen, pinned, flex-centred, overflow-hidden
       <svg viewBox="0 0 2577 391">
         <defs><clipPath id="round-clip">…</clipPath></defs>
         <path id="line"/>  <path id="wave"/>
