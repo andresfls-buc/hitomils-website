@@ -124,15 +124,26 @@ export function useWaveBend(
                 continue
               }
 
-              const mid = Math.max(0, Math.min(length, at + seg.width / 2))
-              const before = line.getPointAtLength(Math.max(0, mid - 1))
-              const after = line.getPointAtLength(Math.min(length, mid + 1))
-              const point = line.getPointAtLength(mid)
-              const deg = (Math.atan2(after.y - before.y, after.x - before.x) * 180) / Math.PI
+              // getPointAtLength() clamps to the path's ends, so an image whose
+              // centre has travelled past either end would park there instead of
+              // continuing off-screen — the text keeps flowing (glyphs outside
+              // the path just don't render) while the photos pile up at x=0.
+              // Extrapolate along the end tangent for the overshoot instead.
+              const mid = at + seg.width / 2
+              const onPath = Math.max(0, Math.min(length, mid))
+              const before = line.getPointAtLength(Math.max(0, onPath - 1))
+              const after = line.getPointAtLength(Math.min(length, onPath + 1))
+              const anchor = line.getPointAtLength(onPath)
+              const rad = Math.atan2(after.y - before.y, after.x - before.x)
+              const overshoot = mid - onPath
+
+              const x = anchor.x + Math.cos(rad) * overshoot
+              const y = anchor.y + Math.sin(rad) * overshoot
+              const deg = (rad * 180) / Math.PI
 
               seg.el.setAttribute(
                 'transform',
-                `translate(${point.x} ${point.y}) rotate(${deg}) translate(${-seg.width / 2} ${-IMG_SIZE / 2})`
+                `translate(${x} ${y}) rotate(${deg}) translate(${-seg.width / 2} ${-IMG_SIZE / 2})`
               )
             }
           }
