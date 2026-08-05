@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!-- Reference prototype for docs/superpowers/specs/2026-08-05-portfolio-3d-tilt-wheel-design.md
+     Open directly in a browser. Query params force a deterministic frame for screenshots:
+       ?p=<scroll progress 0..1>&mx=<pointer x -1..1>&my=<pointer y -1..1>&spin=<radians>&tx=<base tiltX deg>
+     With no params it runs live: autonomous spin + pointer tilt + scroll-scrubbed radius/perspective. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#FAF7F4; }
+  .runway { height: 300vh; position: relative; }
+  .stage  { position: sticky; top:0; height:100vh; overflow:hidden; }
+  .container {
+    width:100%; height:100%;
+    perspective: 1000px;
+    perspective-origin: 50% 50%;
+  }
+  .medias {
+    position:absolute; top:50%; left:50%;
+    width:0; height:0;
+    transform-style: preserve-3d;
+  }
+  .media {
+    position:absolute; top:0; left:0;
+    width: 10vw;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    transform-style: preserve-3d;
+    will-change: transform; box-shadow: 0 18px 50px rgba(44,44,44,.16);
+  }
+</style>
+</head>
+<body>
+<div class="runway">
+  <div class="stage">
+    <div class="container">
+      <div class="medias"></div>
+    </div>
+  </div>
+</div>
+
+<script>window.__IMGS__=["../../../public/images/portfolio/autumn-bride-bridal-makeup-fall-foliage-birch-hokkaido.jpg", "../../../public/images/portfolio/bridal-hair-half-up-pearl-pins-back-view-hokkaido.jpg", "../../../public/images/portfolio/bridal-hair-updo-gold-pins-outdoor-hokkaido.jpg", "../../../public/images/portfolio/bridal-makeup-garden-ceremony-outdoor-sapporo.jpg", "../../../public/images/portfolio/bridal-makeup-natural-auburn-hair-sapporo.jpg", "../../../public/images/portfolio/bridal-makeup-sleek-hair-lily-bouquet-sapporo.jpg", "../../../public/images/portfolio/bridal-makeup-soft-light-reclining-hokkaido.jpg", "../../../public/images/portfolio/bridal-makeup-veil-reclining-soft-gaze-sapporo.jpg", "../../../public/images/portfolio/bridal-makeup-winter-snow-fur-stole-hokkaido.jpg", "../../../public/images/portfolio/editorial-makeup-hair-white-flower-studio-hokkaido.jpg", "../../../public/images/portfolio/kimono-japanese-traditional-hair-kanzashi-sapporo.jpg", "../../../public/images/portfolio/special-occasion-hair-makeup-mint-dress-sapporo.jpg", "../../../public/images/portfolio/special-occasion-makeup-outdoor-dark-florals-sapporo.jpg", "../../../public/images/portfolio/summer-wedding-couple-lakeside-pond-pampas-bouquet-hokkaido.jpg", "../../../public/images/portfolio/winter-bridal-makeup-snow-couple-sapporo.jpg", "../../../public/images/portfolio/winter-wedding-couple-snow-forest-hokkaido.jpg"];</script>
+<script>
+const Q = new URLSearchParams(location.search);
+const num = (k, d) => Q.has(k) ? parseFloat(Q.get(k)) : d;
+const STATIC = Q.has('p');   // deterministic screenshot mode
+
+const wrap = document.querySelector('.medias');
+(window.__IMGS__ || []).forEach(src => {
+  const img = document.createElement('img');
+  img.className = 'media'; img.src = src;
+  wrap.appendChild(img);
+});
+const medias = [...document.querySelectorAll('.media')];
+const container = document.querySelector('.container');
+const N = medias.length;
+
+const state = {
+  spin: num('spin', 0),
+  radius: 26,
+  perspective: 900,
+  tiltX: num('tx', 68),
+};
+const pointer = { x: num('mx', 0), y: num('my', 0) };
+const eased   = { x: pointer.x, y: pointer.y };
+
+function applyProgress(p) {
+  state.radius      = num('r0', 26) + p * num('dr', 26);
+  state.perspective = num('pp0', 900) + p * num('dpp', 1600);
+}
+applyProgress(num('p', 0));
+
+if (!STATIC) {
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js';
+  s.onload = () => {
+    const s2 = document.createElement('script');
+    s2.src = 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js';
+    s2.onload = () => {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.to(state, { spin: Math.PI * 2, duration: 40, repeat: -1, ease: 'none' });
+      ScrollTrigger.create({
+        trigger: '.runway', start: 'top top', end: 'bottom bottom', scrub: 0.6,
+        onUpdate: self => applyProgress(self.progress),
+      });
+    };
+    document.body.appendChild(s2);
+  };
+  document.body.appendChild(s);
+  window.addEventListener('pointermove', e => {
+    pointer.x = (e.clientX / window.innerWidth  - 0.5) * 2;
+    pointer.y = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+}
+
+function render() {
+  const k = STATIC ? 1 : 0.08;
+  eased.x += (pointer.x - eased.x) * k;
+  eased.y += (pointer.y - eased.y) * k;
+
+  const rx = state.tiltX + eased.y * num('ay', 14);
+  const ry = eased.x * num('ax', 22);
+  const vw = window.innerWidth / 100;
+  const R  = state.radius * vw;
+
+  container.style.perspective = state.perspective + 'px';
+  wrap.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+
+  const inv = `rotateY(${-ry}deg) rotateX(${-rx}deg)`;
+  for (let i = 0; i < N; i++) {
+    const th = state.spin + (i / N) * Math.PI * 2;
+    medias[i].style.transform =
+      `translate3d(${Math.cos(th) * R}px, ${Math.sin(th) * R}px, 0px) ${inv} translate(-50%, -50%)`;
+  }
+  if (!STATIC) requestAnimationFrame(render);
+}
+render();
+if (STATIC) { document.title = 'ready'; }
+</script>
+</body>
+</html>
