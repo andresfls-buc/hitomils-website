@@ -152,7 +152,7 @@ centred band — this is why the reference describes "a viewport-sized container
 - `#wave` is never visible — `fill: none`, `opacity: 0`. It exists only as a
   morph target.
 
-## Two pitfalls the prototype caught
+## Four pitfalls, two caught by the prototype and two only in the real app
 
 These both produce silently wrong output rather than an error, so they are
 called out explicitly:
@@ -165,6 +165,19 @@ called out explicitly:
 2. **The `<svg>` must be `overflow: visible`.** Segments spend most of their life
    outside the 2577-unit canvas and would otherwise be clipped away at both ends.
    The pinned stage does the clipping instead, via `overflow: hidden`.
+3. **Do not gate this on `gsap.matchMedia()` with only a reduced-motion query.**
+   A matchMedia context is activated only when at least one of its queries
+   matches — `gsap-core.js` does `anyMatch && matches.push(c)`. A lone
+   always-false `prefers-reduced-motion` query therefore never runs its callback
+   at all, and every segment stays at `startOffset` 0, stacked on top of each
+   other. `useTiltWheel` gets away with matchMedia only because it also carries
+   `isMobile`/`isDesktop`, one of which always matches. Use a plain
+   `window.matchMedia(...).matches` guard here.
+4. **Read `trigger.progress` inside the render loop, not cached from `onUpdate`.**
+   `onUpdate` fires only when the scroll *changes*. Since `setup()` waits on
+   `document.fonts.ready`, the trigger can be created when the visitor is already
+   inside the section — a slow font load, or a reload part-way down the page —
+   and the train then sits parked off-screen until they scroll again.
 
 ## Section structure
 

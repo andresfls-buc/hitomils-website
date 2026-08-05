@@ -99,12 +99,14 @@ export function useWaveBend(
   useIsomorphicLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger, MorphSVGPlugin)
 
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia()
-
-      mm.add({ reduceMotion: '(prefers-reduced-motion: reduce)' }, (context) => {
-        // Reduced motion: the static fallback is already visible; skip GSAP entirely.
-        if (context.conditions?.reduceMotion) return
+    const ctx = gsap.context(
+      () => {
+        // Deliberately NOT gsap.matchMedia(). A matchMedia context is only
+        // activated when at least one of its queries matches (gsap-core.js:
+        // `anyMatch && matches.push(c)`), so a lone always-false
+        // prefers-reduced-motion query means the callback never runs at all.
+        // The static fallback is CSS-driven anyway, so a plain guard is correct.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
         const line = lineRef.current
         const track = trackRef.current
@@ -150,7 +152,6 @@ export function useWaveBend(
             ease: 'none',
           })
 
-          let progress = 0
           let bend = 0
           let targetBend = 0
 
@@ -161,7 +162,6 @@ export function useWaveBend(
             pin: stage,
             scrub: 0.5,
             onUpdate: (self) => {
-              progress = self.progress
               targetBend =
                 Math.min(Math.abs(self.getVelocity()) / VELOCITY_FULL, 1) * MAX_BEND
             },
@@ -173,7 +173,11 @@ export function useWaveBend(
 
             // Re-read every frame: morphing changes the path's length.
             const length = line.getTotalLength()
-            const head = baseLength - progress * travel
+            // Read progress from the trigger every frame rather than caching it
+            // from onUpdate: onUpdate only fires when the scroll CHANGES, so a
+            // trigger created while already in range (slow font load, or a
+            // reload part-way down the page) would stay parked at 0.
+            const head = baseLength - trigger.progress * travel
 
             for (const seg of segments) {
               const at = head + seg.at
@@ -199,6 +203,11 @@ export function useWaveBend(
           }
 
           gsap.ticker.add(render)
+
+          // setup() runs off document.fonts.ready, which can land after layout
+          // has settled; re-measure so start/end are right.
+          ScrollTrigger.refresh()
+
           render() // paint the first frame before the browser does
 
           return () => {
@@ -222,8 +231,9 @@ export function useWaveBend(
           cancelled = true
           teardown?.()
         }
-      })
-    }, runwayRef)
+      },
+      runwayRef
+    )
 
     return () => ctx.revert()
   }, [runwayRef, stageRef, lineRef, trackRef])
@@ -545,8 +555,19 @@ Read before starting. Each of these produces silently wrong output rather than a
 4. **Measure text only after `document.fonts.ready`.** `getComputedTextLength()` returns fallback-font widths until the webfont loads, and the train is laid out once — it never self-corrects.
 5. **Re-read `getTotalLength()` every frame.** Morphing changes the path's length; caching it makes the images drift away from the text as the line bends.
 6. **`MAX_BEND` is 0.35, not 1.** At full morph progress the wave is violently over-bent and leaves the band.
-7. **`setup` must stay a `const` arrow function, declared before it is used.**
+7. **Do not gate this on `gsap.matchMedia()` with only a reduced-motion query.**
+   A matchMedia context is activated only when at least one of its queries
+   matches (`gsap-core.js`: `anyMatch && matches.push(c)`), so a lone
+   always-false `prefers-reduced-motion` query means the callback never runs and
+   every segment stays at `startOffset` 0, stacked on top of each other. Use a
+   plain `window.matchMedia(...).matches` guard.
+8. **Read `trigger.progress` inside the render loop, not from `onUpdate`.**
+   `onUpdate` fires only when the scroll *changes*. Because `setup()` runs off
+   `document.fonts.ready`, the trigger can be created while the visitor is
+   already inside the section — a slow font load, or a reload part-way down the
+   page — and the train then sits parked off-screen until they scroll again.
+9. **`setup` must stay a `const` arrow function, declared before it is used.**
    TypeScript preserves the non-null narrowing of `line`/`track`/`stage` inside a
    closure created after the guard, but NOT inside a hoisted `function setup()` —
    that form fails with `TS18047: 'line' is possibly 'null'` on six lines.
-8. **Do not add `z-index`, `will-change`, or transforms to `#track` or its children** beyond the `transform` attribute the hook writes on images. The text is positioned entirely by `startOffset`.
+10. **Do not add `z-index`, `will-change`, or transforms to `#track` or its children** beyond the `transform` attribute the hook writes on images. The text is positioned entirely by `startOffset`.
