@@ -21,6 +21,8 @@ const BEND_EASE = 0.08 // how fast the bend chases its target, per frame
 interface Segment {
   el: SVGGraphicsElement
   textPath: SVGTextPathElement | null
+  // Plain off-path <text> twin used purely for measurement; null for images.
+  ruler: SVGTextContentElement | null
   width: number
   at: number // cumulative offset from the head of the train
 }
@@ -49,12 +51,23 @@ export function useWaveBend(
         const runway = runwayRef.current
         if (!line || !track || !stage || !runway) return
 
+        // WebKit returns 0 from getComputedTextLength() (and from getBBox()) for a
+        // <text> whose content lives inside a <textPath> — confirmed against the
+        // live site. Measuring the on-path text therefore gives every phrase a
+        // width of 0 on iOS and they all stack. Measure these plain off-path
+        // twins instead; they report correctly in every engine.
+        const rulers = Array.from(
+          (track.ownerSVGElement ?? track).querySelectorAll<SVGTextContentElement>('.wave-measure')
+        )
+
+        let textIndex = 0
         const segments: Segment[] = Array.from(track.children).map((node) => {
           const el = node as SVGGraphicsElement
           const isText = el.tagName === 'text'
           return {
             el,
             textPath: isText ? (el.firstElementChild as SVGTextPathElement) : null,
+            ruler: isText ? (rulers[textIndex++] ?? null) : null,
             width: IMG_SIZE,
             at: 0,
           }
@@ -63,20 +76,24 @@ export function useWaveBend(
         // Lay the segments end to end into a "train" and return its total length.
         //
         // This re-runs every frame rather than once at setup, and that is
-        // deliberate. getComputedTextLength() reports fallback-font widths until
-        // the webfont is actually applied to the SVG text, and document.fonts.ready
-        // is NOT a reliable barrier for that — it resolves for the fonts loaded so
-        // far, which on a slow phone can be before Cormorant reaches these <text>
-        // nodes. Measuring once loses that race silently: the train is laid out
-        // with the wrong widths and never corrects itself, so segments overlap.
-        // Three getComputedTextLength() calls per frame is a rounding error next to
-        // the getPointAtLength() calls below.
+        // deliberate: getComputedTextLength() reports fallback-font widths until
+        // the webfont is actually applied, and document.fonts.ready is NOT a
+        // reliable barrier for that — it resolves for the fonts loaded so far,
+        // which on a slow phone can be before Cormorant reaches these nodes.
+        // Measuring once loses that race silently and never self-corrects.
+        // A few getComputedTextLength() calls per frame is a rounding error next
+        // to the getPointAtLength() calls below.
         const measure = () => {
           let cursor = 0
           for (const seg of segments) {
-            seg.width = seg.textPath
-              ? (seg.el as SVGTextContentElement).getComputedTextLength()
-              : IMG_SIZE
+            if (seg.ruler) {
+              const w = seg.ruler.getComputedTextLength()
+              // Keep the last good width if an engine ever reports 0 here, so a
+              // bad measurement degrades to stale spacing rather than a pile-up.
+              if (w > 0) seg.width = w
+            } else {
+              seg.width = IMG_SIZE
+            }
             seg.at = cursor
             cursor += seg.width + GAP
           }

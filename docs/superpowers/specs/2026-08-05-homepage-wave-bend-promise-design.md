@@ -174,7 +174,16 @@ called out explicitly:
    other. `useTiltWheel` gets away with matchMedia only because it also carries
    `isMobile`/`isDesktop`, one of which always matches. Use a plain
    `window.matchMedia(...).matches` guard here.
-5. **Measure segment widths every frame, not once.** `getComputedTextLength()`
+5. **Never measure a `<text>` that contains a `<textPath>` — WebKit returns 0.**
+   Verified against the live site: in WebKit both `getComputedTextLength()` and
+   `getBBox().width` return **0** for on-path text, while Chromium returns the
+   real advance width. Every phrase therefore gets width 0 on iOS Safari and the
+   segments stack on top of each other — the sentence renders as one illegible
+   pile. Measure hidden plain `<text>` twins instead (`.wave-measure`, no
+   textPath, `opacity="0"`, parked off-canvas), built from the same string array
+   as the track so they cannot drift. This is invisible in Chrome, so **any
+   change to how segments are measured must be checked in WebKit.**
+6. **Measure segment widths every frame, not once.** `getComputedTextLength()`
    reports fallback-font widths until the webfont is actually applied to the SVG
    text, and `document.fonts.ready` is **not** a reliable barrier for that — it
    resolves for the fonts loaded so far, which on a slow phone can be before
@@ -184,7 +193,7 @@ called out explicitly:
    race is lost. Three `getComputedTextLength()` calls per frame cost nothing
    next to the `getPointAtLength()` calls already there, and measuring per frame
    also removes the need to defer setup on `document.fonts.ready` at all.
-6. **Never clamp an image's position with `getPointAtLength()`.** It clamps to
+7. **Never clamp an image's position with `getPointAtLength()`.** It clamps to
    the path's ends, so once an image's centre passes either end it parks there
    instead of travelling off-screen. Text is unaffected, so the symptom is the
    sentence flowing away normally while the photographs pile up at the left edge.
@@ -239,6 +248,10 @@ does not discover it by way of two sections fighting over one path.
 - `FeaturedGallery`, `/portfolio`, and every other section are untouched.
 
 ## Verification
+
+0. **Check WebKit, not just Chrome.** Two of this section's bugs were invisible
+   in Chromium. `npx playwright install webkit` and drive a real WebKit page at
+   390×844 against a production build (`next build` + `next start`).
 
 1. `npx tsc --noEmit`, `npm run lint`, `npm run build` all clean.
 2. Live screenshots at 1440×900 show giant Cormorant type and rounded photos
