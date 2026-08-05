@@ -9,23 +9,37 @@ const LINE_D = 'M0 195H644H1288H1932H2576'
 const WAVE_D =
   'M0.21875 190.5C0.21875 190.5 382.004 0.5 644.219 0.5C906.434 0.5 1051.3 78.1239 1288.22 190.5C1531.72 306 1668.87 390.5 1932.22 390.5C2195.57 390.5 2576.22 190.5 2576.22 190.5'
 
-const PHOTOS = [
+type Segment =
+  | { kind: 'text'; value: string }
+  | { kind: 'image'; src: string; alt: string }
+
+// Single source of truth for the track. The measuring twins below are built from
+// the same array, so a copy edit can never leave them out of sync — and out of
+// sync means silently wrong spacing.
+const SEGMENTS: Segment[] = [
+  { kind: 'text', value: 'It’s your day' },
   {
+    kind: 'image',
     src: '/images/portfolio/bridal-makeup-natural-ethereal-close-up-sapporo.jpg',
     alt: 'Ethereal natural bridal makeup close-up, Sapporo',
   },
+  { kind: 'text', value: 'I’ll take care of everything' },
   {
+    kind: 'image',
     src: '/images/portfolio/bridal-hair-half-up-hotel-smiling-hokkaido.jpg',
     alt: 'Bridal half-up hairstyle with pink peony bouquet, hotel room, Hokkaido',
   },
+  { kind: 'text', value: 'you just enjoy it' },
 ]
+
+const PHOTOS = SEGMENTS.filter((s): s is Extract<Segment, { kind: 'image' }> => s.kind === 'image')
+const PHRASES = SEGMENTS.filter((s): s is Extract<Segment, { kind: 'text' }> => s.kind === 'text')
 
 const SENTENCE = 'It’s your day — I’ll take care of everything — you just enjoy it.'
 
-// The <text> elements are measured by the hook, so their styling must be on the
-// element itself rather than inherited through a class that might not apply
-// inside the SVG.
+// Font must be declared on the element itself; a class may not reach inside the SVG.
 const textStyle = { fontFamily: 'var(--font-cormorant)' } as const
+const TEXT_ATTRS = { fontSize: 300, fontWeight: 300, style: textStyle } as const
 
 export default function WaveBendPromise() {
   const runwayRef = useRef<HTMLDivElement>(null)
@@ -42,10 +56,7 @@ export default function WaveBendPromise() {
 
       {/* ── Pinned travelling line (motion-safe) ──────────────────────────── */}
       <div ref={runwayRef} className="pin-height relative h-[200vh] motion-reduce:hidden">
-        <div
-          ref={stageRef}
-          className="relative flex h-screen items-center overflow-hidden"
-        >
+        <div ref={stageRef} className="relative flex h-screen items-center overflow-hidden">
           <svg
             aria-hidden="true"
             viewBox="0 0 2577 391"
@@ -63,36 +74,41 @@ export default function WaveBendPromise() {
             <path ref={lineRef} id="line" d={LINE_D} fill="none" />
             <path id="wave" d={WAVE_D} fill="none" opacity="0" />
 
+            {/* ── Measuring twins ────────────────────────────────────────────
+                WebKit returns 0 from getComputedTextLength() AND getBBox() for a
+                <text> whose content sits inside a <textPath> — verified against
+                the live site. Measuring the on-path text there yields width 0 for
+                every phrase, so they all stack on top of each other on iOS.
+                These plain <text> copies carry no textPath and measure correctly
+                in every engine. Parked far off-canvas and fully transparent, so
+                they can never be seen but are still laid out and measurable. */}
+            <g id="wave-measure" opacity="0" aria-hidden="true" pointerEvents="none">
+              {PHRASES.map((phrase) => (
+                <text key={phrase.value} className="wave-measure" x={0} y={-10000} {...TEXT_ATTRS}>
+                  {phrase.value}
+                </text>
+              ))}
+            </g>
+
             <g ref={trackRef} id="track">
-              <text fill="#2C2C2C" fontSize="300" fontWeight="300" style={textStyle}>
-                <textPath href="#line" startOffset="0" textAnchor="start">
-                  It’s your day
-                </textPath>
-              </text>
-              <image
-                href={PHOTOS[0].src}
-                width={280}
-                height={280}
-                clipPath="url(#round-clip)"
-                preserveAspectRatio="xMidYMid slice"
-              />
-              <text fill="#2C2C2C" fontSize="300" fontWeight="300" style={textStyle}>
-                <textPath href="#line" startOffset="0" textAnchor="start">
-                  I’ll take care of everything
-                </textPath>
-              </text>
-              <image
-                href={PHOTOS[1].src}
-                width={280}
-                height={280}
-                clipPath="url(#round-clip)"
-                preserveAspectRatio="xMidYMid slice"
-              />
-              <text fill="#2C2C2C" fontSize="300" fontWeight="300" style={textStyle}>
-                <textPath href="#line" startOffset="0" textAnchor="start">
-                  you just enjoy it
-                </textPath>
-              </text>
+              {SEGMENTS.map((seg) =>
+                seg.kind === 'text' ? (
+                  <text key={seg.value} fill="#2C2C2C" {...TEXT_ATTRS}>
+                    <textPath href="#line" startOffset="0" textAnchor="start">
+                      {seg.value}
+                    </textPath>
+                  </text>
+                ) : (
+                  <image
+                    key={seg.src}
+                    href={seg.src}
+                    width={280}
+                    height={280}
+                    clipPath="url(#round-clip)"
+                    preserveAspectRatio="xMidYMid slice"
+                  />
+                )
+              )}
             </g>
           </svg>
         </div>

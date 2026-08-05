@@ -86,6 +86,8 @@ const BEND_EASE = 0.08 // how fast the bend chases its target, per frame
 interface Segment {
   el: SVGGraphicsElement
   textPath: SVGTextPathElement | null
+  // Plain off-path <text> twin used purely for measurement; null for images.
+  ruler: SVGTextContentElement | null
   width: number
   at: number // cumulative offset from the head of the train
 }
@@ -114,12 +116,23 @@ export function useWaveBend(
         const runway = runwayRef.current
         if (!line || !track || !stage || !runway) return
 
+        // WebKit returns 0 from getComputedTextLength() (and from getBBox()) for a
+        // <text> whose content lives inside a <textPath> — confirmed against the
+        // live site. Measuring the on-path text therefore gives every phrase a
+        // width of 0 on iOS and they all stack. Measure these plain off-path
+        // twins instead; they report correctly in every engine.
+        const rulers = Array.from(
+          (track.ownerSVGElement ?? track).querySelectorAll<SVGTextContentElement>('.wave-measure')
+        )
+
+        let textIndex = 0
         const segments: Segment[] = Array.from(track.children).map((node) => {
           const el = node as SVGGraphicsElement
           const isText = el.tagName === 'text'
           return {
             el,
             textPath: isText ? (el.firstElementChild as SVGTextPathElement) : null,
+            ruler: isText ? (rulers[textIndex++] ?? null) : null,
             width: IMG_SIZE,
             at: 0,
           }
@@ -128,20 +141,24 @@ export function useWaveBend(
         // Lay the segments end to end into a "train" and return its total length.
         //
         // This re-runs every frame rather than once at setup, and that is
-        // deliberate. getComputedTextLength() reports fallback-font widths until
-        // the webfont is actually applied to the SVG text, and document.fonts.ready
-        // is NOT a reliable barrier for that — it resolves for the fonts loaded so
-        // far, which on a slow phone can be before Cormorant reaches these <text>
-        // nodes. Measuring once loses that race silently: the train is laid out
-        // with the wrong widths and never corrects itself, so segments overlap.
-        // Three getComputedTextLength() calls per frame is a rounding error next to
-        // the getPointAtLength() calls below.
+        // deliberate: getComputedTextLength() reports fallback-font widths until
+        // the webfont is actually applied, and document.fonts.ready is NOT a
+        // reliable barrier for that — it resolves for the fonts loaded so far,
+        // which on a slow phone can be before Cormorant reaches these nodes.
+        // Measuring once loses that race silently and never self-corrects.
+        // A few getComputedTextLength() calls per frame is a rounding error next
+        // to the getPointAtLength() calls below.
         const measure = () => {
           let cursor = 0
           for (const seg of segments) {
-            seg.width = seg.textPath
-              ? (seg.el as SVGTextContentElement).getComputedTextLength()
-              : IMG_SIZE
+            if (seg.ruler) {
+              const w = seg.ruler.getComputedTextLength()
+              // Keep the last good width if an engine ever reports 0 here, so a
+              // bad measurement degrades to stale spacing rather than a pile-up.
+              if (w > 0) seg.width = w
+            } else {
+              seg.width = IMG_SIZE
+            }
             seg.at = cursor
             cursor += seg.width + GAP
           }
@@ -281,23 +298,37 @@ const LINE_D = 'M0 195H644H1288H1932H2576'
 const WAVE_D =
   'M0.21875 190.5C0.21875 190.5 382.004 0.5 644.219 0.5C906.434 0.5 1051.3 78.1239 1288.22 190.5C1531.72 306 1668.87 390.5 1932.22 390.5C2195.57 390.5 2576.22 190.5 2576.22 190.5'
 
-const PHOTOS = [
+type Segment =
+  | { kind: 'text'; value: string }
+  | { kind: 'image'; src: string; alt: string }
+
+// Single source of truth for the track. The measuring twins below are built from
+// the same array, so a copy edit can never leave them out of sync — and out of
+// sync means silently wrong spacing.
+const SEGMENTS: Segment[] = [
+  { kind: 'text', value: 'It’s your day' },
   {
+    kind: 'image',
     src: '/images/portfolio/bridal-makeup-natural-ethereal-close-up-sapporo.jpg',
     alt: 'Ethereal natural bridal makeup close-up, Sapporo',
   },
+  { kind: 'text', value: 'I’ll take care of everything' },
   {
+    kind: 'image',
     src: '/images/portfolio/bridal-hair-half-up-hotel-smiling-hokkaido.jpg',
     alt: 'Bridal half-up hairstyle with pink peony bouquet, hotel room, Hokkaido',
   },
+  { kind: 'text', value: 'you just enjoy it' },
 ]
+
+const PHOTOS = SEGMENTS.filter((s): s is Extract<Segment, { kind: 'image' }> => s.kind === 'image')
+const PHRASES = SEGMENTS.filter((s): s is Extract<Segment, { kind: 'text' }> => s.kind === 'text')
 
 const SENTENCE = 'It’s your day — I’ll take care of everything — you just enjoy it.'
 
-// The <text> elements are measured by the hook, so their styling must be on the
-// element itself rather than inherited through a class that might not apply
-// inside the SVG.
+// Font must be declared on the element itself; a class may not reach inside the SVG.
 const textStyle = { fontFamily: 'var(--font-cormorant)' } as const
+const TEXT_ATTRS = { fontSize: 300, fontWeight: 300, style: textStyle } as const
 
 export default function WaveBendPromise() {
   const runwayRef = useRef<HTMLDivElement>(null)
@@ -314,10 +345,7 @@ export default function WaveBendPromise() {
 
       {/* ── Pinned travelling line (motion-safe) ──────────────────────────── */}
       <div ref={runwayRef} className="pin-height relative h-[200vh] motion-reduce:hidden">
-        <div
-          ref={stageRef}
-          className="relative flex h-screen items-center overflow-hidden"
-        >
+        <div ref={stageRef} className="relative flex h-screen items-center overflow-hidden">
           <svg
             aria-hidden="true"
             viewBox="0 0 2577 391"
@@ -335,36 +363,41 @@ export default function WaveBendPromise() {
             <path ref={lineRef} id="line" d={LINE_D} fill="none" />
             <path id="wave" d={WAVE_D} fill="none" opacity="0" />
 
+            {/* ── Measuring twins ────────────────────────────────────────────
+                WebKit returns 0 from getComputedTextLength() AND getBBox() for a
+                <text> whose content sits inside a <textPath> — verified against
+                the live site. Measuring the on-path text there yields width 0 for
+                every phrase, so they all stack on top of each other on iOS.
+                These plain <text> copies carry no textPath and measure correctly
+                in every engine. Parked far off-canvas and fully transparent, so
+                they can never be seen but are still laid out and measurable. */}
+            <g id="wave-measure" opacity="0" aria-hidden="true" pointerEvents="none">
+              {PHRASES.map((phrase) => (
+                <text key={phrase.value} className="wave-measure" x={0} y={-10000} {...TEXT_ATTRS}>
+                  {phrase.value}
+                </text>
+              ))}
+            </g>
+
             <g ref={trackRef} id="track">
-              <text fill="#2C2C2C" fontSize="300" fontWeight="300" style={textStyle}>
-                <textPath href="#line" startOffset="0" textAnchor="start">
-                  It’s your day
-                </textPath>
-              </text>
-              <image
-                href={PHOTOS[0].src}
-                width={280}
-                height={280}
-                clipPath="url(#round-clip)"
-                preserveAspectRatio="xMidYMid slice"
-              />
-              <text fill="#2C2C2C" fontSize="300" fontWeight="300" style={textStyle}>
-                <textPath href="#line" startOffset="0" textAnchor="start">
-                  I’ll take care of everything
-                </textPath>
-              </text>
-              <image
-                href={PHOTOS[1].src}
-                width={280}
-                height={280}
-                clipPath="url(#round-clip)"
-                preserveAspectRatio="xMidYMid slice"
-              />
-              <text fill="#2C2C2C" fontSize="300" fontWeight="300" style={textStyle}>
-                <textPath href="#line" startOffset="0" textAnchor="start">
-                  you just enjoy it
-                </textPath>
-              </text>
+              {SEGMENTS.map((seg) =>
+                seg.kind === 'text' ? (
+                  <text key={seg.value} fill="#2C2C2C" {...TEXT_ATTRS}>
+                    <textPath href="#line" startOffset="0" textAnchor="start">
+                      {seg.value}
+                    </textPath>
+                  </text>
+                ) : (
+                  <image
+                    key={seg.src}
+                    href={seg.src}
+                    width={280}
+                    height={280}
+                    clipPath="url(#round-clip)"
+                    preserveAspectRatio="xMidYMid slice"
+                  />
+                )
+              )}
             </g>
           </svg>
         </div>
@@ -572,4 +605,8 @@ Read before starting. Each of these produces silently wrong output rather than a
    either end parks there instead of continuing off-screen — the text keeps
    flowing (glyphs outside the path just don't render) while the photos pile up
    at x=0. Extrapolate along the end tangent for the overshoot.
-11. **Do not add `z-index`, `will-change`, or transforms to `#track` or its children** beyond the `transform` attribute the hook writes on images. The text is positioned entirely by `startOffset`.
+11. **Never measure a `<text>` containing a `<textPath>`.** WebKit returns 0 from
+   both `getComputedTextLength()` and `getBBox()` for it, so every phrase gets
+   width 0 on iOS Safari and the segments stack into an illegible pile. Measure
+   the hidden `.wave-measure` twins instead. Chrome hides this completely.
+12. **Do not add `z-index`, `will-change`, or transforms to `#track` or its children** beyond the `transform` attribute the hook writes on images. The text is positioned entirely by `startOffset`.
