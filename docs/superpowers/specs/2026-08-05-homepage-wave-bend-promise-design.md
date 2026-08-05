@@ -22,11 +22,11 @@ Three text segments with a photograph between each:
 |---|---|
 | 1 | text — `It's your day` |
 | 2 | image — `/images/portfolio/bridal-makeup-natural-ethereal-close-up-sapporo.jpg` |
-| 3 | text — `I'll take care of everything else` |
+| 3 | text — `I'll take care of everything` |
 | 4 | image — `/images/portfolio/bridal-hair-half-up-hotel-smiling-hokkaido.jpg` |
 | 5 | text — `you just enjoy it` |
 
-Read as one sentence: *"It's your day — I'll take care of everything else — you
+Read as one sentence: *"It's your day — I'll take care of everything — you
 just enjoy it."*
 
 Voice is first person singular (`I'll`), matching the rest of the site
@@ -174,7 +174,17 @@ called out explicitly:
    other. `useTiltWheel` gets away with matchMedia only because it also carries
    `isMobile`/`isDesktop`, one of which always matches. Use a plain
    `window.matchMedia(...).matches` guard here.
-5. **Never clamp an image's position with `getPointAtLength()`.** It clamps to
+5. **Measure segment widths every frame, not once.** `getComputedTextLength()`
+   reports fallback-font widths until the webfont is actually applied to the SVG
+   text, and `document.fonts.ready` is **not** a reliable barrier for that — it
+   resolves for the fonts loaded so far, which on a slow phone can be before
+   Cormorant reaches these `<text>` nodes. Measuring once loses that race
+   silently: the train is laid out with wrong widths and never corrects itself,
+   so segments overlap. This showed up only on mobile in production, where the
+   race is lost. Three `getComputedTextLength()` calls per frame cost nothing
+   next to the `getPointAtLength()` calls already there, and measuring per frame
+   also removes the need to defer setup on `document.fonts.ready` at all.
+6. **Never clamp an image's position with `getPointAtLength()`.** It clamps to
    the path's ends, so once an image's centre passes either end it parks there
    instead of travelling off-screen. Text is unaffected, so the symptom is the
    sentence flowing away normally while the photographs pile up at the left edge.
