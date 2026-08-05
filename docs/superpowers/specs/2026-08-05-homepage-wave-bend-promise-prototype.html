@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!-- Reference prototype for docs/superpowers/specs/2026-08-05-homepage-wave-bend-promise-design.md
+     Open directly in a browser to see it live (scroll to drive it).
+     Query params force a deterministic frame for screenshots:
+       ?p=<progress 0..1>&bend=<0..1>&sw=<svg width in vw>&sh=<stage height in vh>&gap=<units>&imgw=<units>
+     Verified values: desktop sw=110 sh=60, mobile sw=170 sh=40, bend capped at 0.35. -->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#FAF7F4; }
+  .runway { height: 300vh; position: relative; }
+  .stage  { position: sticky; top:0; height: var(--sh, 100vh); display:flex; align-items:center;
+            overflow:hidden; }
+  svg { flex: 0 0 auto; overflow: visible; width: var(--sw, 150vw); height: auto; display:block; }
+  #line, #wave { fill:none; }
+  .seg-text { font-family:'Cormorant Garamond', Georgia, serif; font-weight:300; fill:#2C2C2C; }
+</style>
+</head>
+<body>
+<div class="runway">
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 2577 391" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="round-clip" clipPathUnits="objectBoundingBox">
+          <rect width="1" height="1" rx=".08" ry=".08"/>
+        </clipPath>
+      </defs>
+      <path id="line" d="M0 195H644H1288H1932H2576"/>
+      <path id="wave" style="opacity:0" d="M0.21875 190.5C0.21875 190.5 382.004 0.5 644.219 0.5C906.434 0.5 1051.3 78.1239 1288.22 190.5C1531.72 306 1668.87 390.5 1932.22 390.5C2195.57 390.5 2576.22 190.5 2576.22 190.5"/>
+      <g id="track">
+        <text class="segment seg-text" font-size="300"><textPath href="#line" text-anchor="start">It&apos;s your day</textPath></text>
+        <image class="segment" href="../../../public/images/portfolio/bridal-makeup-natural-ethereal-close-up-sapporo.jpg" height="280" clip-path="url(#round-clip)" preserveAspectRatio="xMidYMid slice"/>
+        <text class="segment seg-text" font-size="300"><textPath href="#line" text-anchor="start">I&apos;ll take care of everything else</textPath></text>
+        <image class="segment" href="../../../public/images/portfolio/bridal-hair-half-up-hotel-smiling-hokkaido.jpg" height="280" clip-path="url(#round-clip)" preserveAspectRatio="xMidYMid slice"/>
+        <text class="segment seg-text" font-size="300"><textPath href="#line" text-anchor="start">you just enjoy it</textPath></text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MorphSVGPlugin.min.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const num = (k,d) => Q.has(k) ? parseFloat(Q.get(k)) : d;
+const STATIC = Q.has('p');
+document.documentElement.style.setProperty('--sw', num('sw',150)+'vw');
+document.documentElement.style.setProperty('--sh', num('sh',100)+'vh');
+
+const line  = document.getElementById('line');
+const track = document.getElementById('track');
+const segs  = [...track.children];
+
+const GAP = num('gap', 120);       // user units between segments
+const IMG_W = num('imgw', 280);    // square-ish images
+
+document.fonts.ready.then(start);
+
+function start() {
+  gsap.registerPlugin(ScrollTrigger, MorphSVGPlugin);
+
+  // ── measure the train ────────────────────────────────────────────────────
+  const items = segs.map(el => {
+    const isText = el.tagName === 'text';
+    const w = isText ? el.getComputedTextLength() : IMG_W;
+    return { el, isText, w, tp: isText ? el.firstElementChild : null };
+  });
+  items.forEach(it => { if (!it.isText) { it.el.setAttribute('width', IMG_W); } });
+
+  let cursor = 0;
+  items.forEach(it => { it.at = cursor; cursor += it.w + GAP; });
+  const trainLen = cursor - GAP;
+
+  const baseLen = line.getTotalLength();
+  const travel  = baseLen + trainLen;
+
+  // ── bend: a paused morph whose progress tracks scroll velocity ───────────
+  const morph = gsap.to(line, {
+    morphSVG: { shape: '#wave' }, duration: 1, paused: true, ease: 'none',
+  });
+
+  const state = { progress: num('p', 0), bend: num('bend', 0) };
+  let targetBend = state.bend;
+
+  if (!STATIC) {
+    ScrollTrigger.create({
+      trigger: '.runway', start: 'top top', end: 'bottom bottom', scrub: 0.5,
+      onUpdate: self => {
+        state.progress = self.progress;
+        targetBend = Math.min(Math.abs(self.getVelocity()) / num('vmax', 2600), 1);
+      },
+    });
+  }
+
+  function render() {
+    if (!STATIC) state.bend += (targetBend - state.bend) * 0.08;
+    morph.progress(state.bend);
+
+    const len  = line.getTotalLength();
+    const head = baseLen - state.progress * travel;
+
+    for (const it of items) {
+      const at = head + it.at;
+      if (it.isText) {
+        it.tp.setAttribute('startOffset', at);
+      } else {
+        const mid = Math.max(0, Math.min(len, at + it.w / 2));
+        const p0 = line.getPointAtLength(Math.max(0, mid - 1));
+        const p1 = line.getPointAtLength(Math.min(len, mid + 1));
+        const pt = line.getPointAtLength(mid);
+        const deg = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+        it.el.setAttribute(
+          'transform',
+          `translate(${pt.x} ${pt.y}) rotate(${deg}) translate(${-it.w / 2} ${-IMG_W / 2})`
+        );
+      }
+    }
+  }
+
+  gsap.ticker.add(render);
+  render();
+  if (STATIC) { targetBend = state.bend; setTimeout(() => document.title = 'ready', 400); }
+}
+</script>
+</body>
+</html>
