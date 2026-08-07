@@ -26,7 +26,10 @@ export default function HeroSection() {
           Bridal
           <br />
           <em>Beauty</em>
-          <span className="mhero-byline">by Hitomi</span>
+          {/* Not shown: the name is already displayed as the giant vertical
+              word, which is aria-hidden. This keeps the h1 reading in full
+              for assistive tech and crawlers without repeating it on screen. */}
+          <span className="sr-only"> by Hitomi</span>
         </h1>
 
         <div className="hero-cta mt-10 flex flex-wrap items-center gap-3">

@@ -333,15 +333,6 @@ h1, h2, h3, h4, h5, h6 {
   color: #2c2c2c;
   white-space: nowrap;
 }
-.mhero-byline {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 0.3em; /* em, so it tracks the h1 clamp */
-  font-style: italic;
-  letter-spacing: 0.02em;
-  color: #a8796a;
-  white-space: nowrap;
-}
 .mhero-note {
   position: absolute;
   left: var(--content-left);
