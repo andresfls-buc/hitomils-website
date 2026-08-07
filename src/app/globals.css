@@ -223,16 +223,17 @@ h1, h2, h3, h4, h5, h6 {
    .mhero and fall through to the viewport. Never consume these vars on
    .mhero itself. */
 .mhero {
-  --word-left: 4cqw;
-  --word-size: 21cqh;
+  --word-left: 3.5cqw;
+  --word-size: 15cqh;
   --word-lh: 0.78;
   --word-band: calc(var(--word-size) * var(--word-lh));
-  --gutter: 3.5cqw;
+  --gutter: 3cqw;
   --content-left: calc(var(--word-left) + var(--word-band) + var(--gutter));
-  /* Every hero photo is 2:3 (verified: 0.6665-0.6669). Shaping the pane to
-     the same ratio means object-fit:cover has essentially nothing to crop.
-     Width therefore derives from the hero's HEIGHT, not from a % of width. */
-  --photo-w: calc(100cqh * 2 / 3);
+  /* 70/30 split, by request. Note this reintroduces crop: an uncropped 2:3
+     portrait can only be ~38% of a 16:9 viewport's width, so a 70% pane
+     necessarily cuts top and bottom. object-position keeps faces centred.
+     Everything in the 30% panel is sized down to fit it. */
+  --photo-w: 70%;
 
   position: relative;
   width: 100%;
@@ -285,6 +286,7 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   bottom: 0;
   width: calc(100% - var(--photo-w) + 1%);
+  min-width: 240px;
   z-index: 3;
   background-color: #faf7f4;
   box-shadow: 22px 0 55px rgba(44, 44, 44, 0.18);
@@ -363,7 +365,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
   font-weight: 300;
   line-height: 0.95;
-  font-size: clamp(2.2rem, 5vw, 4.6rem);
+  font-size: clamp(1.9rem, 3.4vw, 3.4rem);
   color: #2c2c2c;
   white-space: nowrap;
 }
@@ -378,6 +380,14 @@ h1, h2, h3, h4, h5, h6 {
   color: #2c2c2c;
 }
 
+/* Bottom-left dock, clear of the vertical word's band. */
+.mhero-cta {
+  position: absolute;
+  left: var(--content-left);
+  bottom: 7%;
+  z-index: 6;
+}
+
 .mhero-seamfade {
   display: none;
 }
@@ -388,11 +398,16 @@ h1, h2, h3, h4, h5, h6 {
    panel below) and the word runs down the left edge across BOTH.
    900px, not 768px: between them the word band + headline + two buttons
    do not fit beside a 46% pane and the CTAs wrap onto the photograph. */
-@media (max-width: 700px) {
+@media (max-width: 1000px) {
   .mhero {
     --word-left: 3.5cqw;
     --word-size: 15cqh;
     --gutter: 4.5cqw;
+    --photo-w: 100%;
+    /* 150cqw is the uncropped 2:3 height. Capped, because at 820px wide
+       that is 1230px — taller than the hero, which pushed the cream band
+       off the bottom of the section entirely. */
+    --photo-h: min(150cqw, 60cqh);
     /* Full height here: the photo claims width x 3/2 of it, so the cream
        band below needs the remainder to hold the title and CTAs. */
     height: 100vh;
@@ -404,15 +419,14 @@ h1, h2, h3, h4, h5, h6 {
     top: 0;
     bottom: auto;
     width: auto;
-    height: auto;
-    aspect-ratio: 2 / 3;
+    height: var(--photo-h);
   }
   /* Panel turns into the bottom band. No shadow here — the seam fade below
      already carries the transition, and the two together read as grime. */
   .mhero-panel {
     left: 0;
     right: 0;
-    top: calc(150cqw - 8px);
+    top: calc(var(--photo-h) - 8px);
     bottom: 0;
     width: auto;
     height: auto;
@@ -430,7 +444,7 @@ h1, h2, h3, h4, h5, h6 {
     position: absolute;
     left: 0;
     right: 0;
-    top: calc(150cqw - 110px);
+    top: calc(var(--photo-h) - 110px);
     height: 110px;
     z-index: 3;
     pointer-events: none;
@@ -438,15 +452,15 @@ h1, h2, h3, h4, h5, h6 {
   }
   .mhero-content {
     top: auto;
-    bottom: 5%;
+    bottom: 24%;
     transform: none;
     /* The word band eats ~1/3 of a phone's width, so the remaining column
        cannot hold two buttons side by side — they ran off the edge. */
     right: 4vw;
   }
-  .mhero-content .hero-cta {
-    flex-direction: column;
-    align-items: flex-start;
+  .mhero-cta {
+    bottom: 5%;
+    right: 4vw;
   }
   .mhero-note {
     display: none;
