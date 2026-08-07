@@ -43,7 +43,11 @@ export default function Header() {
       : 'bg-transparent'
     : 'bg-[#FAF7F4]/95 backdrop-blur-sm shadow-sm'
 
-  const textColor = isHome && !scrolled ? 'text-white' : 'text-[#2C2C2C]'
+  // Ink everywhere. White was chosen for the old homepage hero, but the
+  // magazine hero is light on both sides — a cream panel on the left and
+  // high-key photographs on the right — so white text and the white burger
+  // icon were invisible against it.
+  const textColor = 'text-[#2C2C2C]'
 
   return (
     <>
