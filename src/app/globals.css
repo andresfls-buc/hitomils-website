@@ -380,12 +380,18 @@ h1, h2, h3, h4, h5, h6 {
   color: #2c2c2c;
 }
 
-/* Bottom-left dock, clear of the vertical word's band. */
+/* Bottom-left dock, clear of the vertical word's band. Fixed width so both
+   buttons match — their labels differ in length, so intrinsic sizing made
+   one visibly wider than the other. */
 .mhero-cta {
   position: absolute;
   left: var(--content-left);
   bottom: 7%;
   z-index: 6;
+  width: 12.5rem;
+}
+.mhero-cta > a {
+  width: 100%;
 }
 
 .mhero-seamfade {
