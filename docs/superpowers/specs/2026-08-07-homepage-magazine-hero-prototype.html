@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magazine hero — composition studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FAF7F4;
+    --ink:#2C2C2C;
+    --muted:#7A7570;
+    --terracotta:#A8796A;
+    --gold:#B8A080;
+    --gold-light:#D6C4A8;
+    --serif:'Cormorant Garamond', Georgia, serif;
+    --sans:'Jost', system-ui, sans-serif;
+
+    /* ── The layout contract ────────────────────────────────────────
+       The vertical word is set in `vertical-rl`, so the horizontal space
+       it eats is its LINE BOX: font-size x line-height. Nothing else can
+       be placed against it by eye — that is exactly how the headline
+       ended up sitting inside the letterforms. So the band is computed,
+       and every other element starts after it. Change --word-size and
+       the whole composition re-flows correctly.
+       ───────────────────────────────────────────────────────────── */
+    --word-left: 4.5cqw;
+    --word-size: 25cqh;
+    --word-lh: .78;
+    --word-band: calc(var(--word-size) * var(--word-lh));
+    --gutter: 4cqw;
+    --content-left: calc(var(--word-left) + var(--word-band) + var(--gutter));
+
+    --photo-left: 46%;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:#e8e4e0; font-family:var(--sans);}
+
+  .label{
+    font-family:var(--sans); font-size:11px; letter-spacing:.18em;
+    text-transform:uppercase; color:#5b5652; padding:28px 24px 10px;
+  }
+  .label b{color:var(--ink); font-weight:500;}
+  .label span{display:block; margin-top:6px; letter-spacing:.04em;
+    text-transform:none; font-size:12px; color:#6f6a66; max-width:70ch; line-height:1.6;}
+
+  /* ─────────────────────────────────────────────────────────────
+     Shared hero shell
+     ───────────────────────────────────────────────────────────── */
+  .hero{
+    position:relative; width:100%; height:88vh; min-height:580px; max-height:860px;
+    background:var(--cream); overflow:hidden;
+    /* Makes cqh/cqw above resolve against this box rather than the window,
+       so max-height clamping can never desync the word from its frame. */
+    container-type:size;
+  }
+
+  .photo{position:absolute; inset:0; overflow:hidden;}
+  .photo img{width:100%; height:100%; object-fit:cover;}
+
+  /* ── Rotating stack ───────────────────────────────────────────────
+     Frames sit on top of each other and crossfade. Only opacity is
+     animated, so this stays on the compositor and never lays out.
+     z-index 0 keeps them under the wash pseudo-elements. */
+  .rotator img{
+    position:absolute; inset:0; z-index:0;
+    opacity:0; transition:opacity 1.2s ease-in-out;
+  }
+  .rotator img.on{opacity:1;}
+  @media (prefers-reduced-motion: reduce){
+    /* No cycling at all: the first frame is simply the hero image. */
+    .rotator img{transition:none;}
+  }
+
+  .seam .photo{left:var(--photo-left); top:0; right:0; bottom:0;}
+  .seam .photo img{object-position:72% center;}
+
+  /* ── The giant vertical word ──────────────────────────────────
+     Taller than the frame on purpose — the viewport crops it, which is
+     what makes it read as a print crop rather than a centred logo.
+     Anchored to the TOP, not the bottom. Rotated `vertical-rl` reads
+     bottom-to-top, so the element's bottom edge is the H: anchoring
+     there put the crop on the first letter and the word read "ITOMI".
+     Overflowing the top instead clips the terminal I, which costs
+     nothing legible. */
+  .bigword{
+    position:absolute;
+    left:var(--word-left);
+    top:-5cqh;
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    font-family:var(--serif);
+    font-weight:300;
+    font-size:var(--word-size);
+    line-height:var(--word-lh);
+    letter-spacing:.01em;
+    color:var(--ink);
+    white-space:nowrap;
+    z-index:5;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  /* ── Seam fade (small screens only) ───────────────────────────────
+     On mobile the word crosses the photo. Some frames are tight face crops,
+     so the crossing lands on skin and the ink goes muddy. Rather than tune
+     object-position per photo — which cannot hold for a rotating set — the
+     foot of the photo fades to cream and the word always crosses that. */
+  .seamfade{display:none;}
+
+  /* ── Left margin rail ─────────────────────────────────────────── */
+  .rail{
+    position:absolute; left:0; top:50%;
+    transform:translateY(-50%) rotate(180deg);
+    writing-mode:vertical-rl;
+    font-family:var(--sans); font-weight:400;
+    font-size:10px; letter-spacing:.42em; text-transform:uppercase;
+    color:var(--muted);
+    padding:0 14px;
+    z-index:4;
+  }
+
+  /* ── Content block ────────────────────────────────────────────────
+     One flow container instead of four absolutely-placed items, so the
+     eyebrow / headline / CTAs cannot overlap each other either. */
+  .content{
+    position:absolute;
+    left:var(--content-left);
+    top:16%;
+    right:5vw;
+    z-index:2;
+  }
+  .eyebrow{
+    font-family:var(--sans); font-size:10px; letter-spacing:.24em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .headline{
+    margin-top:1.1rem;
+    font-family:var(--serif); font-weight:300;
+    line-height:.95;
+    font-size:clamp(2.4rem, 6.2vw, 5.6rem);
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  .headline em{font-style:italic;}
+  .ctas{margin-top:2.6rem; display:flex; flex-wrap:wrap; gap:10px; align-items:center;}
+  .btn{
+    font-family:var(--sans); font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; padding:13px 22px; text-decoration:none;
+    border:1px solid var(--ink); color:var(--cream); background:var(--ink);
+    white-space:nowrap;
+  }
+  .btn.ghost{background:transparent; color:var(--ink); border-color:var(--gold);}
+
+  /* ── Micro column of body copy, sitting on the image ──────────── */
+  .microcol{
+    position:absolute;
+    left:var(--content-left);
+    bottom:12%;
+    z-index:4;
+    width:126px;
+    font-family:var(--sans); font-weight:300;
+    font-size:10.5px; line-height:1.62;
+    text-align:justify;
+    color:var(--ink);
+  }
+
+  /* ═════════════════════════════════════════════════════════════
+     VARIANT C — warm wash
+     ═════════════════════════════════════════════════════════════ */
+  .warm .photo::after{
+    content:''; position:absolute; inset:0;
+    background:var(--terracotta); mix-blend-mode:multiply; opacity:.26;
+  }
+  .warm .photo::before{
+    content:''; position:absolute; inset:0; z-index:2;
+    background:var(--gold-light); mix-blend-mode:screen; opacity:.16;
+  }
+
+  /* ═════════════════════════════════════════════════════════════
+     VARIANT B — full bleed
+     ═════════════════════════════════════════════════════════════ */
+  .bleed .photo{inset:0;}
+  .bleed .photo img{object-position:50% 18%;}
+  .bleed .photo::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(100deg, rgba(44,44,44,.52) 0%, rgba(44,44,44,.18) 46%, rgba(44,44,44,0) 72%);
+  }
+  .bleed .bigword{color:rgba(250,247,244,.94);}
+  .bleed .rail{color:rgba(250,247,244,.72);}
+  .bleed .eyebrow{color:rgba(250,247,244,.8);}
+  .bleed .headline{color:var(--cream);}
+  .bleed .microcol{color:var(--cream); text-shadow:0 1px 12px rgba(44,44,44,.55);}
+  .bleed .btn{background:var(--cream); color:var(--ink); border-color:var(--cream);}
+  .bleed .btn.ghost{background:transparent; color:var(--cream); border-color:rgba(250,247,244,.6);}
+
+  /* ═════════════════════════════════════════════════════════════
+     SMALL SCREENS
+     The desktop split cannot survive here: the word band alone would
+     eat most of a 390px viewport. So the seam turns horizontal —
+     photo on top, cream panel below — and the word runs down the left
+     edge across BOTH, which keeps the crossing device intact.
+     ═════════════════════════════════════════════════════════════ */
+  @media (max-width: 900px){
+    :root{
+      --word-left: 3.5cqw;
+      --word-size: 19cqh;
+      --gutter: 5cqw;
+    }
+    .hero{height:92vh; max-height:none;}
+
+    .rail{display:none;}          /* no room for it beside the word */
+    .microcol{display:none;}      /* 10px justified text is wrong on a phone anyway */
+
+    .seam .photo{left:0; right:0; top:0; bottom:38%;}
+    .seam .photo img{object-position:62% 20%;}
+
+    /* At this size the word is shorter than the hero, so there is nothing
+       to crop — anchor it to the bottom and show it whole. */
+    .bigword{top:auto; bottom:4%;}
+
+    .seam .seamfade{
+      display:block; position:absolute; left:0; right:0;
+      bottom:38%; height:24%; z-index:3; pointer-events:none;
+      background:linear-gradient(to bottom, rgba(250,247,244,0), var(--cream));
+    }
+
+    /* Ink word stays legible: it crosses the cream fade, not bare photo. */
+    .seam .bigword{color:var(--ink);}
+
+    .content{
+      top:auto; bottom:6%;
+      left:var(--content-left);
+      right:5vw;
+    }
+    .headline{white-space:normal; font-size:clamp(2rem, 9vw, 3rem);}
+    .ctas{margin-top:1.6rem; flex-direction:column; align-items:flex-start; gap:8px;}
+    .btn{padding:11px 18px; font-size:10px;}
+
+    .bleed .photo img{object-position:52% 14%;}
+    .bleed .photo::after{
+      background:linear-gradient(to top, rgba(44,44,44,.62) 0%, rgba(44,44,44,.22) 42%, rgba(44,44,44,0) 70%);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     A — SEAM
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="label" data-study="a"><b>A — Seam.</b> Cream-backed photo, cream margin on the left.
+<span>Palette untouched. Drama carried entirely by type scale. Word and headline now occupy separate columns.</span></div>
+<section class="hero seam" data-study="a">
+  <div class="photo">
+    <img src="../../../public/images/portfolio/editorial-makeup-messy-bun-pearl-earrings-sapporo.jpg" alt="">
+  </div>
+  <div class="seamfade"></div>
+  <div class="rail">Sapporo · Hokkaido · Japan</div>
+  <div class="bigword">HITOMI</div>
+  <div class="content">
+    <p class="eyebrow">Bridal Makeup &amp; Hair</p>
+    <h1 class="headline">Bridal<br><em>Beauty</em></h1>
+    <div class="ctas">
+      <a class="btn" href="#">View My Work</a>
+      <a class="btn ghost" href="#">Book a Session</a>
+    </div>
+  </div>
+  <p class="microcol">Bridal makeup and wedding hairstyling in Sapporo, Hokkaido. Twelve years refining a single craft — looks built for the length of a whole day, and for the photographs that outlive it.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     B — FULL BLEED
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="label" data-study="b"><b>B — Full bleed.</b> Photo covers the whole hero; the word is knocked out in cream over it.
+<span>More arresting, but the scrim that makes the text legible also mutes the left of the photo.</span></div>
+<section class="hero bleed" data-study="b">
+  <div class="photo">
+    <img src="../../../public/images/portfolio/bridal-makeup-natural-updo-elegant-portrait-sapporo.jpg" alt="">
+  </div>
+  <div class="seamfade"></div>
+  <div class="rail">Sapporo · Hokkaido · Japan</div>
+  <div class="bigword">HITOMI</div>
+  <div class="content">
+    <p class="eyebrow">Bridal Makeup &amp; Hair</p>
+    <h1 class="headline">Bridal<br><em>Beauty</em></h1>
+    <div class="ctas">
+      <a class="btn" href="#">View My Work</a>
+      <a class="btn ghost" href="#">Book a Session</a>
+    </div>
+  </div>
+  <p class="microcol">Bridal makeup and wedding hairstyling in Sapporo, Hokkaido. Twelve years refining a single craft — looks built for the length of a whole day, and for the photographs that outlive it.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     C — SEAM + WARM WASH
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="label" data-study="c"><b>C — Seam + warm wash.</b> Variant A with a terracotta multiply and a gold-light screen.
+<span>The reference's duotone translated into your palette — warm, not grey, not blue.</span></div>
+<section class="hero seam warm" data-study="c">
+  <div class="photo rotator">
+    <img class="on" style="object-position:55% 20%" src="../../../public/images/portfolio/bridal-makeup-natural-updo-elegant-portrait-sapporo.jpg" alt="Bridal makeup, natural updo, Sapporo">
+    <img style="object-position:72% 50%" src="../../../public/images/portfolio/editorial-makeup-messy-bun-pearl-earrings-sapporo.jpg" alt="Editorial bridal makeup, messy bun, Sapporo">
+    <img style="object-position:50% 8%" src="../../../public/images/portfolio/bridal-makeup-close-up-coral-tones-hokkaido.jpg" alt="Bridal makeup close-up, coral tones, Hokkaido">
+    <img style="object-position:50% 25%" src="../../../public/images/portfolio/bridal-makeup-portrait-half-up-hair-sapporo.jpg" alt="Bridal makeup and half-up hair, Sapporo">
+    <img style="object-position:50% 20%" src="../../../public/images/portfolio/bridal-makeup-long-wavy-hair-floral-lace-gown-sapporo.jpg" alt="Bridal makeup, long wavy hair, lace gown, Sapporo">
+  </div>
+  <div class="seamfade"></div>
+  <div class="rail">Sapporo · Hokkaido · Japan</div>
+  <div class="bigword">HITOMI</div>
+  <div class="content">
+    <p class="eyebrow">Bridal Makeup &amp; Hair</p>
+    <h1 class="headline">Bridal<br><em>Beauty</em></h1>
+    <div class="ctas">
+      <a class="btn" href="#">View My Work</a>
+      <a class="btn ghost" href="#">Book a Session</a>
+    </div>
+  </div>
+  <p class="microcol">Bridal makeup and wedding hairstyling in Sapporo, Hokkaido. Twelve years refining a single craft — looks built for the length of a whole day, and for the photographs that outlive it.</p>
+</section>
+
+<script>
+  /* Prototype-only helper: #a / #b / #c isolates one study so it can be
+     screenshotted at a true hero height. No hash = show everything. */
+  (function () {
+    var h = location.hash.replace('#', '').toLowerCase();
+    if (!h || !'abc'.includes(h)) return;
+    document.querySelectorAll('[data-study]').forEach(function (el) {
+      if (el.dataset.study !== h) el.remove();
+    });
+    document.querySelectorAll('.label').forEach(function (el) {
+      if (!el.dataset.study) el.remove();
+    });
+  })();
+
+  /* ── 4s photo rotation ──────────────────────────────────────────────
+     Held to a single timer per rotator. Pauses when the tab is hidden so
+     a backgrounded page is not burning a crossfade every four seconds,
+     and never starts at all under prefers-reduced-motion. */
+  (function () {
+    var HOLD = 4000;
+    var still = matchMedia('(prefers-reduced-motion: reduce)');
+
+    document.querySelectorAll('.rotator').forEach(function (stack) {
+      var frames = Array.prototype.slice.call(stack.querySelectorAll('img'));
+      if (frames.length < 2) return;
+
+      /* Prototype affordance: ?s=N pins one frame so each crop can be
+         screenshotted deterministically instead of caught mid-cycle. */
+      var pin = new URLSearchParams(location.search).get('s');
+      if (pin !== null) {
+        var k = Math.min(frames.length - 1, Math.max(0, parseInt(pin, 10) || 0));
+        frames.forEach(function (f, j) { f.classList.toggle('on', j === k); });
+        return;
+      }
+      if (still.matches) return;
+
+      var i = 0, timer = null;
+      function step() {
+        frames[i].classList.remove('on');
+        i = (i + 1) % frames.length;
+        frames[i].classList.add('on');
+      }
+      function run()  { if (!timer) timer = setInterval(step, HOLD); }
+      function halt() { clearInterval(timer); timer = null; }
+
+      document.addEventListener('visibilitychange', function () {
+        document.hidden ? halt() : run();
+      });
+      still.addEventListener('change', function (e) { e.matches ? halt() : run(); });
+      run();
+    });
+  })();
+</script>
+</body>
+</html>
