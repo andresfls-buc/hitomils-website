@@ -458,7 +458,11 @@ h1, h2, h3, h4, h5, h6 {
        cannot hold two buttons side by side — they ran off the edge. */
     right: 4vw;
   }
+  /* Hard left on small screens. The vertical word is centred and ends well
+     above this, so the dock can clear its band entirely instead of starting
+     at the text column — which read as centred. */
   .mhero-cta {
+    left: 8vw;
     bottom: 5%;
     right: 4vw;
   }
