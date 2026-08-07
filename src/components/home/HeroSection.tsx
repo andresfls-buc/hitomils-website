@@ -6,6 +6,11 @@ export default function HeroSection() {
     <section className="mhero">
       <HeroPhotoRotator />
 
+      {/* The cream panel is a layer ON TOP of a full-bleed photo, not one
+          half of a split — that edge and its shadow are what make the
+          composition read as paper laid over an image. */}
+      <div className="mhero-panel" aria-hidden="true" />
+
       {/* Gives the vertical word a pale bed to cross on small screens. */}
       <div className="mhero-seamfade" aria-hidden="true" />
 

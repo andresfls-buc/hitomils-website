@@ -271,6 +271,22 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
+/* The cream column is a PANEL over the photo, not the section background
+   showing through. It deliberately overhangs the photo's left edge by 1%
+   and casts a shadow onto it, so the two columns read as paper laid on an
+   image rather than as two flat halves meeting at a seam. */
+.mhero-panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--photo-left) + 1%);
+  z-index: 3;
+  background-color: #faf7f4;
+  box-shadow: 22px 0 55px rgba(44, 44, 44, 0.18);
+  pointer-events: none;
+}
+
 /* Crossfade stack. Only opacity animates, so this stays on the compositor. */
 .mhero-frame {
   z-index: 0;
@@ -370,6 +386,16 @@ h1, h2, h3, h4, h5, h6 {
     right: 0;
     top: 0;
     bottom: 38%;
+  }
+  /* Panel turns into the bottom band. No shadow here — the seam fade below
+     already carries the transition, and the two together read as grime. */
+  .mhero-panel {
+    left: 0;
+    right: 0;
+    top: auto;
+    width: auto;
+    height: 39%;
+    box-shadow: none;
   }
   /* At this size the word is shorter than the hero — show it whole. */
   .mhero-word {
