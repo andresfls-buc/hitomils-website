@@ -62,8 +62,8 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
       <HeroSection />
-      <IntroSection />
       <WaveBendPromise />
+      <IntroSection />
       <ServicesPreview />
       <FeaturedGallery />
       <TestimonialsSection />

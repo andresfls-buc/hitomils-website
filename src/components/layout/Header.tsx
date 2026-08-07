@@ -43,7 +43,16 @@ export default function Header() {
       : 'bg-transparent'
     : 'bg-[#FAF7F4]/95 backdrop-blur-sm shadow-sm'
 
-  const textColor = isHome && !scrolled ? 'text-white' : 'text-[#2C2C2C]'
+  // White over the hero, but the hero photographs are high-key — plain white
+  // strokes vanish against them, which is why the burger icon looked absent.
+  // The shadow costs nothing on darker frames and rescues it on pale ones.
+  // White over the hero, per preference. The hero photographs are high-key,
+  // so a single soft shadow was not enough — plain white strokes disappeared
+  // against pale skin and the burger icon read as missing entirely. Two
+  // stacked shadows give a tight edge plus a halo, which holds on any frame.
+  const textColor = isHome && !scrolled
+    ? 'text-white [filter:drop-shadow(0_1px_2px_rgba(44,44,44,0.95))_drop-shadow(0_0_8px_rgba(44,44,44,0.7))]'
+    : 'text-[#2C2C2C]'
 
   return (
     <>

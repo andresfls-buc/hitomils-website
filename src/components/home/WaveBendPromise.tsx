@@ -55,7 +55,19 @@ export default function WaveBendPromise() {
       <p className="sr-only">{SENTENCE}</p>
 
       {/* ── Pinned travelling line (motion-safe) ──────────────────────────── */}
-      <div ref={runwayRef} className="pin-height relative h-[200vh] motion-reduce:hidden">
+      {/* Runway height IS the reading speed: the stage is pinned for h-screen, so
+          the train covers its whole length over (runway - 100vh) of scrolling.
+          Taller runway = slower writing. This is the only knob to tune here.
+          Sized against measured travel — the train is ~9944 user units, which is
+          ~6100px wide on a 1440px desktop and ~2560px on a 390px phone. These
+          heights put it near 1.1px of travel per 1px of scroll, i.e. the words
+          drift by at roughly reading pace. Desktop needs the taller runway
+          because the svg is 110vw there vs 170vw on mobile, so the same train
+          covers far more screen-widths per screen of scroll. */}
+      <div
+        ref={runwayRef}
+        className="pin-height relative h-[800vh] max-md:h-[380vh] motion-reduce:hidden"
+      >
         <div ref={stageRef} className="relative flex h-screen items-center overflow-hidden">
           <svg
             aria-hidden="true"
