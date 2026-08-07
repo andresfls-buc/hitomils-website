@@ -37,21 +37,22 @@ export default function HeroSection() {
           <span className="sr-only"> by Hitomi</span>
         </h1>
 
-        <div className="hero-cta mt-10 flex flex-wrap items-center gap-3">
-          <Button href="/portfolio" variant="filled" size="lg">
+        <div className="hero-cta mt-8 flex flex-wrap items-center justify-start gap-2.5">
+          <Button href="/portfolio" variant="filled" size="sm">
             View My Work
           </Button>
-          <Button href="/contact" variant="ghost" size="lg">
+          <Button href="/contact" variant="ghost" size="sm">
             Book a Session
           </Button>
         </div>
+
+        <p className="hero-body mhero-note">
+          Bridal makeup and wedding hairstyling in Sapporo, Hokkaido. Twelve
+          years refining a single craft — looks built for the length of a whole
+          day, and for the photographs that outlive it.
+        </p>
       </div>
 
-      <p className="hero-body mhero-note">
-        Bridal makeup and wedding hairstyling in Sapporo, Hokkaido. Twelve years
-        refining a single craft — looks built for the length of a whole day, and
-        for the photographs that outlive it.
-      </p>
     </section>
   )
 }

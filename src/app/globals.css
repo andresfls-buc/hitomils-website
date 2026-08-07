@@ -229,7 +229,10 @@ h1, h2, h3, h4, h5, h6 {
   --word-band: calc(var(--word-size) * var(--word-lh));
   --gutter: 3.5cqw;
   --content-left: calc(var(--word-left) + var(--word-band) + var(--gutter));
-  --photo-left: 36%;
+  /* Every hero photo is 2:3 (verified: 0.6665-0.6669). Shaping the pane to
+     the same ratio means object-fit:cover has essentially nothing to crop.
+     Width therefore derives from the hero's HEIGHT, not from a % of width. */
+  --photo-w: calc(100cqh * 2 / 3);
 
   position: relative;
   width: 100%;
@@ -247,7 +250,8 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   right: 0;
   bottom: 0;
-  left: var(--photo-left);
+  left: auto;
+  width: var(--photo-w);
   overflow: hidden;
 }
 .mhero-photo::after {
@@ -280,7 +284,7 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   top: 0;
   bottom: 0;
-  width: calc(var(--photo-left) + 1%);
+  width: calc(100% - var(--photo-w) + 1%);
   z-index: 3;
   background-color: #faf7f4;
   box-shadow: 22px 0 55px rgba(44, 44, 44, 0.18);
@@ -291,10 +295,22 @@ h1, h2, h3, h4, h5, h6 {
 .mhero-frame {
   z-index: 0;
   opacity: 0;
-  transition: opacity 1200ms ease-in-out;
+  /* `visibility` is load-bearing, not belt-and-braces. Relying on opacity
+     alone left the four inactive frames painting on top of each other —
+     verified by removing them from the DOM, which produced a clean render.
+     The delay keeps the outgoing frame visible for the whole crossfade and
+     only then pulls it out of paint. */
+  visibility: hidden;
+  transition:
+    opacity 1200ms ease-in-out,
+    visibility 0s linear 1200ms;
 }
 .mhero-frame[data-on='true'] {
   opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 1200ms ease-in-out,
+    visibility 0s linear 0s;
 }
 
 /* Centred and sized to fit whole — no crop. Sizing note that still binds:
@@ -338,7 +354,8 @@ h1, h2, h3, h4, h5, h6 {
 .mhero-content {
   position: absolute;
   left: var(--content-left);
-  top: 16%;
+  top: 50%;
+  transform: translateY(-50%);
   right: 5vw;
   z-index: 4;
 }
@@ -351,11 +368,8 @@ h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
 }
 .mhero-note {
-  position: absolute;
-  left: var(--content-left);
-  bottom: 12%;
-  z-index: 6;
-  width: 126px;
+  margin-top: 2.75rem;
+  width: 190px;
   font-family: var(--font-sans);
   font-weight: 300;
   font-size: 10.5px;
@@ -377,25 +391,31 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 700px) {
   .mhero {
     --word-left: 3.5cqw;
-    --word-size: 19cqh;
-    --gutter: 5cqw;
-    height: 92vh;
+    --word-size: 15cqh;
+    --gutter: 4.5cqw;
+    /* Full height here: the photo claims width x 3/2 of it, so the cream
+       band below needs the remainder to hold the title and CTAs. */
+    height: 100vh;
     max-height: none;
   }
   .mhero-photo {
     left: 0;
     right: 0;
     top: 0;
-    bottom: 38%;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    aspect-ratio: 2 / 3;
   }
   /* Panel turns into the bottom band. No shadow here — the seam fade below
      already carries the transition, and the two together read as grime. */
   .mhero-panel {
     left: 0;
     right: 0;
-    top: auto;
+    top: calc(150cqw - 8px);
+    bottom: 0;
     width: auto;
-    height: 39%;
+    height: auto;
     /* Shadow stays on phones too — without it the panel stops reading as a
        panel and the composition looks like a plain stacked photo. */
     box-shadow: 0 -20px 45px rgba(44, 44, 44, 0.16);
@@ -410,15 +430,26 @@ h1, h2, h3, h4, h5, h6 {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 38%;
-    height: 24%;
+    top: calc(150cqw - 110px);
+    height: 110px;
     z-index: 3;
     pointer-events: none;
     background: linear-gradient(to bottom, rgba(250, 247, 244, 0), #faf7f4);
   }
   .mhero-content {
     top: auto;
-    bottom: 6%;
+    bottom: 5%;
+    transform: none;
+    /* The word band eats ~1/3 of a phone's width, so the remaining column
+       cannot hold two buttons side by side — they ran off the edge. */
+    right: 4vw;
+  }
+  .mhero-content .hero-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .mhero-note {
+    display: none;
   }
   .mhero-title {
     white-space: normal;
