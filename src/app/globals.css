@@ -223,19 +223,19 @@ h1, h2, h3, h4, h5, h6 {
    .mhero and fall through to the viewport. Never consume these vars on
    .mhero itself. */
 .mhero {
-  --word-left: 4.5cqw;
-  --word-size: 25cqh;
+  --word-left: 4cqw;
+  --word-size: 21cqh;
   --word-lh: 0.78;
   --word-band: calc(var(--word-size) * var(--word-lh));
-  --gutter: 4cqw;
+  --gutter: 3.5cqw;
   --content-left: calc(var(--word-left) + var(--word-band) + var(--gutter));
-  --photo-left: 46%;
+  --photo-left: 36%;
 
   position: relative;
   width: 100%;
-  height: 88vh;
-  min-height: 580px;
-  max-height: 860px;
+  height: 92vh;
+  min-height: 600px;
+  max-height: 940px;
   overflow: hidden;
   background-color: #faf7f4;
   container-type: size;
@@ -297,16 +297,17 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 1;
 }
 
-/* Cropped by the frame on purpose. Anchored to the TOP: rotated vertical-rl
-   reads bottom-to-top, so the element's BOTTOM edge is the H — anchoring
-   there eats the first letter and the word reads "ITOMI". */
+/* Centred and sized to fit whole — no crop. Sizing note that still binds:
+   rotated vertical-rl reads bottom-to-top, so the element's BOTTOM edge is
+   the H. If this is ever anchored to `bottom` and allowed to overflow, the
+   crop eats the first letter and the word reads "ITOMI". */
 .mhero-word {
   position: absolute;
   left: var(--word-left);
-  top: -5cqh;
+  top: 50%;
   z-index: 5;
   writing-mode: vertical-rl;
-  transform: rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
   font-family: var(--font-serif);
   font-weight: 300;
   font-size: var(--word-size);
@@ -345,7 +346,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
   font-weight: 300;
   line-height: 0.95;
-  font-size: clamp(2.4rem, 6.2vw, 5.6rem);
+  font-size: clamp(2.2rem, 5vw, 4.6rem);
   color: #2c2c2c;
   white-space: nowrap;
 }
@@ -373,7 +374,7 @@ h1, h2, h3, h4, h5, h6 {
    panel below) and the word runs down the left edge across BOTH.
    900px, not 768px: between them the word band + headline + two buttons
    do not fit beside a 46% pane and the CTAs wrap onto the photograph. */
-@media (max-width: 900px) {
+@media (max-width: 700px) {
   .mhero {
     --word-left: 3.5cqw;
     --word-size: 19cqh;
@@ -395,13 +396,11 @@ h1, h2, h3, h4, h5, h6 {
     top: auto;
     width: auto;
     height: 39%;
-    box-shadow: none;
+    /* Shadow stays on phones too — without it the panel stops reading as a
+       panel and the composition looks like a plain stacked photo. */
+    box-shadow: 0 -20px 45px rgba(44, 44, 44, 0.16);
   }
   /* At this size the word is shorter than the hero — show it whole. */
-  .mhero-word {
-    top: auto;
-    bottom: 4%;
-  }
   /* Some frames are tight face crops, so the word would cross bare skin
      and go muddy — and which frame is showing changes every 4s, so
      per-photo tuning cannot fix it. Fade the foot of the photo to cream
