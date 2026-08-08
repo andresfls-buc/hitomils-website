@@ -23,6 +23,15 @@
 :root {
   --background: #FAF7F4;
   --foreground: #2C2C2C;
+
+  /* Viewport height that does NOT move when an in-app browser's chrome slides
+     in or out. src/lib/stableViewport.ts overwrites this with a frozen px
+     value on mount; the 100vh here is the pre-hydration fallback and resolves
+     to exactly the same number, so nothing shifts when it takes over.
+     Anything whose height feeds the document's total height should use this
+     rather than vh — see the comment in that file for what stacking raw vh
+     units did to the homepage on Instagram. */
+  --vh: 100vh;
 }
 
 * {
@@ -237,7 +246,7 @@ h1, h2, h3, h4, h5, h6 {
 
   position: relative;
   width: 100%;
-  height: 92vh;
+  height: calc(0.92 * var(--vh));
   min-height: 600px;
   max-height: 940px;
   overflow: hidden;
@@ -416,7 +425,7 @@ h1, h2, h3, h4, h5, h6 {
     --photo-h: min(150cqw, 60cqh);
     /* Full height here: the photo claims width x 3/2 of it, so the cream
        band below needs the remainder to hold the title and CTAs. */
-    height: 100vh;
+    height: var(--vh);
     max-height: none;
   }
   .mhero-photo {

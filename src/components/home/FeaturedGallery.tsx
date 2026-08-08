@@ -73,11 +73,14 @@ export default function FeaturedGallery() {
       </div>
 
       {/* ── Pinned 3D tilt wheel (motion-safe) ────────────────────────────── */}
-      <div
-        ref={runwayRef}
-        className="pin-height relative h-[280vh] max-md:h-[200vh] motion-reduce:hidden"
-      >
-        <div ref={stageRef} className="relative h-screen overflow-hidden">
+      {/* No height here on purpose. The runway used to be h-[280vh]/h-[200vh],
+          which made the document's total height a multiple of the viewport's —
+          so an in-app browser resizing its web view moved everything below by
+          hundreds of pixels and the wheel appeared to jump. The scroll distance
+          now comes from ScrollTrigger's pin spacer in px (see useTiltWheel),
+          the same way PortfolioMarquee does it. */}
+      <div ref={runwayRef} className="pin-height relative motion-reduce:hidden">
+        <div ref={stageRef} className="relative h-[var(--vh)] overflow-hidden">
           <div ref={containerRef} className="absolute inset-0 [perspective:1200px]">
             <div
               ref={wheelRef}

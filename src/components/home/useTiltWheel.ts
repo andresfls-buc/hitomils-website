@@ -3,6 +3,11 @@
 import { useLayoutEffect, useEffect, type RefObject } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import {
+  installStableViewport,
+  onStableViewportChange,
+  stableViewportHeight,
+} from '@/lib/stableViewport'
 
 // useLayoutEffect warns during SSR (no DOM to lay out); fall back to useEffect there.
 // The effect body never actually runs on the server either way — this only silences the warning.
@@ -23,6 +28,10 @@ interface Tuning {
   tiltXTo: number
   tiltXSwing: number // pointer influence on tiltX
   tiltYSwing: number // pointer (or scroll, on touch) influence on tiltY
+  // How far the stage stays pinned, in multiples of the frozen viewport height.
+  // These reproduce the old CSS runways exactly: the runway was 280vh/200vh and
+  // the stage inside it 100vh, so the pin lasted the difference.
+  travel: number
 }
 
 const DESKTOP: Tuning = {
@@ -34,6 +43,7 @@ const DESKTOP: Tuning = {
   tiltXTo: 72,
   tiltXSwing: 14,
   tiltYSwing: 22,
+  travel: 1.8, // was h-[280vh] minus the 100vh stage
 }
 
 const MOBILE: Tuning = {
@@ -45,6 +55,7 @@ const MOBILE: Tuning = {
   tiltXTo: 62,
   tiltXSwing: 0,
   tiltYSwing: 30,
+  travel: 1.0, // was max-md:h-[200vh] minus the 100vh stage
 }
 
 const SPIN_PERIOD = 45 // seconds for one full revolution
@@ -60,6 +71,12 @@ export function useTiltWheel(
 ) {
   useIsomorphicLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
+    installStableViewport()
+
+    // A genuine relayout (rotation, a breakpoint change) does move the frozen
+    // height, and the pin distance is derived from it, so ScrollTrigger has to
+    // re-measure. Chrome sliding in and out never gets this far.
+    const unsubscribe = onStableViewportChange(() => ScrollTrigger.refresh())
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
@@ -111,12 +128,17 @@ export function useTiltWheel(
             ease: 'none',
           })
 
+          // '+=' px rather than 'bottom bottom': the runway no longer has a
+          // height of its own, so the pin spacer IS the scroll distance. Driving
+          // it from the frozen viewport height keeps the document's total height
+          // constant when an in-app browser's chrome slides away.
           const trigger = ScrollTrigger.create({
             trigger: runwayRef.current,
             start: 'top top',
-            end: 'bottom bottom',
+            end: () => '+=' + Math.round(tune.travel * stableViewportHeight()),
             pin: stage,
             scrub: 0.6,
+            invalidateOnRefresh: true,
             onUpdate: (self) => {
               state.progress = self.progress
             },
@@ -178,6 +200,9 @@ export function useTiltWheel(
       )
     }, runwayRef)
 
-    return () => ctx.revert()
+    return () => {
+      unsubscribe()
+      ctx.revert()
+    }
   }, [runwayRef, stageRef, containerRef, wheelRef])
 }
