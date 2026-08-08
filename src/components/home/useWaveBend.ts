@@ -4,6 +4,11 @@ import { useLayoutEffect, useEffect, type RefObject } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
+import {
+  installStableViewport,
+  onStableViewportChange,
+  stableViewportHeight,
+} from '@/lib/stableViewport'
 
 // useLayoutEffect warns during SSR (no DOM to lay out); fall back to useEffect there.
 // The effect body never actually runs on the server either way — this only silences the warning.
@@ -17,6 +22,18 @@ const IMG_SIZE = 280 // images are square
 const MAX_BEND = 0.35 // progress(1) is violently over-bent; 0.35 matches the reference
 const VELOCITY_FULL = 2600 // scroll velocity that reaches MAX_BEND
 const BEND_EASE = 0.08 // how fast the bend chases its target, per frame
+
+// How long the stage stays pinned, in multiples of the frozen viewport height —
+// this is the reading-speed knob. Reproduces the old CSS runways exactly: they
+// were 800vh/380vh wrapped around a 100vh stage, so the pin lasted the
+// difference. The train is ~9944 user units, ~6100px wide on a 1440px desktop
+// and ~2560px on a 390px phone, which puts both of these near 1.1px of travel
+// per 1px of scroll. Desktop needs the longer pin because the svg is 110vw
+// there vs 170vw on mobile, so the same train covers far more screen-widths
+// per screen of scroll.
+const TRAVEL_DESKTOP = 7.0
+const TRAVEL_MOBILE = 2.8
+const DESKTOP_QUERY = '(min-width: 768px)' // Tailwind's `md`, which the markup used
 
 interface Segment {
   el: SVGGraphicsElement
@@ -35,6 +52,11 @@ export function useWaveBend(
 ) {
   useIsomorphicLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger, MorphSVGPlugin)
+    installStableViewport()
+
+    // Only a genuine relayout gets here — chrome sliding in and out never
+    // changes the frozen height, so it never forces a re-measure.
+    const unsubscribe = onStableViewportChange(() => ScrollTrigger.refresh())
 
     const ctx = gsap.context(
       () => {
@@ -113,12 +135,23 @@ export function useWaveBend(
         let bend = 0
         let targetBend = 0
 
+        // '+=' px rather than 'bottom bottom': the runway has no height of its
+        // own now, so the pin spacer IS the scroll distance. Deriving it from
+        // the frozen viewport height keeps the document's total height steady
+        // when an in-app browser's chrome slides away.
         const trigger = ScrollTrigger.create({
           trigger: runway,
           start: 'top top',
-          end: 'bottom bottom',
+          end: () =>
+            '+=' +
+            Math.round(
+              (window.matchMedia(DESKTOP_QUERY).matches
+                ? TRAVEL_DESKTOP
+                : TRAVEL_MOBILE) * stableViewportHeight()
+            ),
           pin: stage,
           scrub: 0.5,
+          invalidateOnRefresh: true,
           onUpdate: (self) => {
             targetBend = Math.min(Math.abs(self.getVelocity()) / VELOCITY_FULL, 1) * MAX_BEND
           },
@@ -184,6 +217,9 @@ export function useWaveBend(
       runwayRef
     )
 
-    return () => ctx.revert()
+    return () => {
+      unsubscribe()
+      ctx.revert()
+    }
   }, [runwayRef, stageRef, lineRef, trackRef])
 }

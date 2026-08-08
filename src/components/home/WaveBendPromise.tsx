@@ -55,20 +55,18 @@ export default function WaveBendPromise() {
       <p className="sr-only">{SENTENCE}</p>
 
       {/* ── Pinned travelling line (motion-safe) ──────────────────────────── */}
-      {/* Runway height IS the reading speed: the stage is pinned for h-screen, so
-          the train covers its whole length over (runway - 100vh) of scrolling.
-          Taller runway = slower writing. This is the only knob to tune here.
-          Sized against measured travel — the train is ~9944 user units, which is
-          ~6100px wide on a 1440px desktop and ~2560px on a 390px phone. These
-          heights put it near 1.1px of travel per 1px of scroll, i.e. the words
-          drift by at roughly reading pace. Desktop needs the taller runway
-          because the svg is 110vw there vs 170vw on mobile, so the same train
-          covers far more screen-widths per screen of scroll. */}
-      <div
-        ref={runwayRef}
-        className="pin-height relative h-[800vh] max-md:h-[380vh] motion-reduce:hidden"
-      >
-        <div ref={stageRef} className="relative flex h-screen items-center overflow-hidden">
+      {/* Pin distance IS the reading speed: the train covers its whole length
+          over however long the stage stays pinned. Longer pin = slower writing.
+          That knob now lives in useWaveBend's TRAVEL, in multiples of the frozen
+          viewport height — it used to be this div's h-[800vh]/h-[380vh], but a
+          runway measured in vh made the document's height a multiple of the
+          viewport's, and in-app browsers that resize their web view then shifted
+          every section below by hundreds of pixels. */}
+      <div ref={runwayRef} className="pin-height relative motion-reduce:hidden">
+        <div
+          ref={stageRef}
+          className="relative flex h-[var(--vh)] items-center overflow-hidden"
+        >
           <svg
             aria-hidden="true"
             viewBox="0 0 2577 391"

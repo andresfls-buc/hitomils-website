@@ -15,6 +15,7 @@ import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 import { portfolioImages } from '@/data/portfolio'
 import type { GalleryImage } from '@/types'
+import { installStableViewport, onStableViewportChange } from '@/lib/stableViewport'
 
 // useLayoutEffect warns during SSR (no DOM to lay out); fall back to useEffect there.
 // The effect body never actually runs on the server either way — this only silences the warning.
@@ -164,6 +165,10 @@ export default function PortfolioMarquee() {
 
   useIsomorphicLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
+    // The rows/columns are sized off --vh, so it has to be published before
+    // measure() reads their heights.
+    installStableViewport()
+    const unsubscribe = onStableViewportChange(() => ScrollTrigger.refresh())
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia()
@@ -244,7 +249,10 @@ export default function PortfolioMarquee() {
       // above whenever the query changes or this component unmounts.
     }, sectionRef)
 
-    return () => ctx.revert()
+    return () => {
+      unsubscribe()
+      ctx.revert()
+    }
   }, [isDesktop])
 
   const renderImage = (image: GalleryImage, indexInGroup: number) => {
@@ -313,11 +321,11 @@ export default function PortfolioMarquee() {
             ref={containerRef}
             className={
               isDesktop
-                ? 'flex h-screen flex-col justify-center gap-3 overflow-hidden'
+                ? 'flex h-[var(--vh)] flex-col justify-center gap-3 overflow-hidden'
                 : // items-start keeps each column at its natural content height —
                   // the default `stretch` would clamp it to the window and there
                   // would be nothing left to travel.
-                  'flex h-screen items-start gap-2 overflow-hidden px-4'
+                  'flex h-[var(--vh)] items-start gap-2 overflow-hidden px-4'
             }
           >
             {groups.map((group, i) => (
@@ -328,7 +336,7 @@ export default function PortfolioMarquee() {
                 }}
                 className={
                   isDesktop
-                    ? 'flex h-[calc((100vh-4*12px)/3)] flex-none gap-3 will-change-transform'
+                    ? 'flex h-[calc((var(--vh)-4*12px)/3)] flex-none gap-3 will-change-transform'
                     : // no will-change here: these columns run to ~9000px and
                       // promoting that to its own layer is a lot of memory on a phone.
                       'flex flex-1 flex-col gap-2'
