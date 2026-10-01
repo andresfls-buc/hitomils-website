@@ -24,7 +24,7 @@ export default function HeroSection() {
 
       <div className="mhero-content">
         <p className="hero-eyebrow font-sans text-[10px] uppercase tracking-[0.24em] text-[#7A7570]">
-          Bridal Makeup &amp; Hair
+          Bridal Makeup &amp; Hair in Japan
         </p>
 
         <h1 className="hero-title mhero-title mt-[1.1rem]">
@@ -38,9 +38,10 @@ export default function HeroSection() {
         </h1>
 
         <p className="hero-body mhero-note">
-          Bridal makeup and wedding hairstyling in Sapporo, Hokkaido. Twelve
-          years refining a single craft — looks built for the length of a whole
-          day, and for the photographs that outlive it.
+          English-speaking bridal makeup and wedding hairstyling in Japan.
+          Based in Sapporo, Hokkaido, with travel across Japan on request.
+          Twelve years creating looks that feel like you, from the first
+          photograph to the last dance.
         </p>
       </div>
 

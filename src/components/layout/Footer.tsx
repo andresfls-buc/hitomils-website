@@ -60,7 +60,8 @@ export default function Footer() {
           </a>
           <p className="mt-6 font-sans text-xs text-[#7A7570] leading-relaxed">
             Available for weddings & events<br />
-            across Hokkaido, Japan.<br />
+            in Sapporo &amp; Hokkaido.<br />
+            Travel across Japan on request.<br />
             Communication in English & Japanese.
           </p>
         </div>

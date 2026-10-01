@@ -7,12 +7,13 @@ import Reveal from '@/components/ui/Reveal'
 import { services, addOns } from '@/data/services'
 import { Check } from 'lucide-react'
 import ServiceBookingButton from '@/components/services/ServiceBookingButton'
+import { siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Services & Pricing',
+  title: 'Bridal Hair & Makeup in Japan: Services & Pricing',
   description:
-    'Bridal makeup and wedding hairstyling services in Sapporo, Japan. Transparent pricing for bridal packages, special occasions, and add-ons. English-speaking makeup artist in Hokkaido.',
-  alternates: { canonical: 'https://makeupbyhitomi.com/services' },
+    'English-speaking bridal makeup and hair in Japan, based in Sapporo, Hokkaido. Nationwide travel is available on request.',
+  alternates: { canonical: `${siteUrl}/services` },
 })
 
 function extractPrice(price: string): object {
@@ -34,7 +35,7 @@ function extractPrice(price: string): object {
 const serviceSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'Bridal Makeup & Hair Services by Hitomi, Sapporo',
+  name: 'Bridal Makeup & Hair Services by Hitomi in Japan',
   itemListElement: services.map((s, i) => ({
     '@type': 'ListItem',
     position: i + 1,
@@ -42,7 +43,8 @@ const serviceSchema = {
       '@type': 'Service',
       name: s.title,
       description: s.description,
-      provider: { '@id': 'https://makeupbyhitomi.com/#business' },
+      provider: { '@id': `${siteUrl}/#business` },
+      areaServed: { '@type': 'Country', name: 'Japan' },
       offers: extractPrice(s.price),
     },
   })),
@@ -59,7 +61,7 @@ export default function ServicesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
       />
 
-      <PageHero title="Services & Pricing" subtitle="What I Offer" />
+      <PageHero title="Bridal Hair & Makeup in Japan" subtitle="Services & Pricing" />
 
       {/* Bridal Services */}
       <section className="py-24 md:py-32 px-6">
@@ -67,6 +69,11 @@ export default function ServicesPage() {
           <Reveal>
             <SectionTitle subtitle="For Your Wedding Day" title="Bridal Services" />
           </Reveal>
+          <p className="mt-6 max-w-3xl font-sans text-sm text-[#7A7570] leading-relaxed">
+            Based in Sapporo, Hokkaido, I help you plan your bridal hair and makeup
+            in English or Japanese. Travel across Japan is available on request
+            and subject to availability. Travel and accommodation are quoted separately.
+          </p>
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
             {bridalServices.map((service, i) => (
               <Reveal key={service.id} delay={i * 0.12}>
@@ -152,7 +159,7 @@ export default function ServicesPage() {
             <div className="mt-10 space-y-4 text-sm text-[#7A7570] font-sans leading-relaxed">
               <p><span className="text-[#2C2C2C] font-medium">Payment:</span> Cash (JPY) accepted on the day. Bank transfer available upon request.</p>
               <p><span className="text-[#2C2C2C] font-medium">Cancellation:</span> Full refund if cancelled 30+ days before the event. 50% charge for cancellations within 14 days.</p>
-              <p><span className="text-[#2C2C2C] font-medium">Travel:</span> Available for weddings across Hokkaido. Travel and accommodation costs apply for locations outside Sapporo.</p>
+              <p><span className="text-[#2C2C2C] font-medium">Travel:</span> Available across Hokkaido and elsewhere in Japan on request, subject to availability. Travel and accommodation costs apply for locations outside Sapporo.</p>
               <p><span className="text-[#2C2C2C] font-medium">Bridal bookings:</span> Please inquire at least 3 months in advance to secure your date.</p>
             </div>
           </Reveal>

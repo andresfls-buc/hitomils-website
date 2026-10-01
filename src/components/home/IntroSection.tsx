@@ -13,24 +13,29 @@ export default function IntroSection() {
               About the Artist
             </p>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-[#2C2C2C] leading-snug">
-              A Little Bit About Me <em className="not-italic italic">♡</em>
+              Your Bridal Makeup Artist in Japan
             </h2>
             <div className="mt-5 h-px w-16 bg-[#B8A080]" />
             <p className="mt-8 font-sans text-base text-[#7A7570] leading-relaxed font-light">
-              Based in Sapporo, Hokkaido, I specialize in bridal makeup and
-              wedding hairstyling for brides who appreciate elegance, beauty &
-              technique. With a deep passion for my craft and experience with
-              over 12+ years of experience working with clients from around the
-              world, I create looks that are tailored to you — refined,
-              enduring, and luxurious.
+              I&apos;m Hitomi, a bridal makeup artist and wedding hairstylist
+              based in Sapporo, Hokkaido. With over 12 years of experience
+              working with clients from around the world, I create looks
+              tailored to your features, your dress and the way you want to
+              feel on your wedding day.
             </p>
             <p className="mt-4 font-sans text-base text-[#7A7570] leading-relaxed font-light">
-              Whether you&apos;re planning a destination wedding in Hokkaido,
-              Japan, I would be honored to be part of your special day.
+              I work in English and Japanese, so we can plan your bridal look
+              together wherever you are travelling from. I serve weddings
+              throughout Hokkaido and travel elsewhere in Japan on request,
+              subject to availability. Share your date and venue to discuss
+              the arrangements and travel costs.
             </p>
-            <div className="mt-10">
+            <div className="mt-10 flex flex-wrap gap-4">
               <Button href="/about" variant="ghost">
                 Meet Hitomi
+              </Button>
+              <Button href="/services" variant="ghost">
+                Bridal Services in Japan
               </Button>
             </div>
           </div>

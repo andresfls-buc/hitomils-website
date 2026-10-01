@@ -6,12 +6,13 @@ import SectionTitle from "@/components/ui/SectionTitle";
 import Button from "@/components/ui/Button";
 import Reveal from "@/components/ui/Reveal";
 import { MapPin, Sparkles } from "lucide-react";
+import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
-  title: "About Hitomi",
+  title: "About Hitomi: Bridal Makeup Artist in Japan",
   description:
-    "Meet Hitomi Landazabal — bridal makeup artist and wedding hairstylist based in Sapporo, Japan. Specialising in elegant looks for international and Asian brides in Hokkaido.",
-  alternates: { canonical: "https://makeupbyhitomi.com/about" },
+    "Meet Hitomi Landazabal, an English-speaking bridal makeup artist and hairstylist based in Sapporo, Hokkaido, with Japan travel available on request.",
+  alternates: { canonical: `${siteUrl}/about` },
 });
 
 const specialties = [

@@ -5,6 +5,7 @@ import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { buildMetadata } from '@/lib/metadata'
+import { siteUrl } from '@/lib/site'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -25,18 +26,18 @@ export const metadata: Metadata = buildMetadata()
 const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  '@id': 'https://makeupbyhitomi.com/#hitomi',
+  '@id': `${siteUrl}/#hitomi`,
   name: 'Hitomi Landazabal',
-  url: 'https://makeupbyhitomi.com/about',
-  image: 'https://makeupbyhitomi.com/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg',
+  url: `${siteUrl}/about`,
+  image: `${siteUrl}/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg`,
   jobTitle: 'Bridal Makeup & Hair Artist',
   description:
-    'Professional bridal makeup artist and wedding hairstylist based in Sapporo, Hokkaido, Japan. Over 12 years of bridal experience, trained at Belle e Poque. Serving international and Asian brides.',
+    'English-speaking bridal makeup artist and wedding hairstylist based in Sapporo, Hokkaido, Japan. Over 12 years of bridal experience, trained at Belle e Poque. Travel across Japan on request.',
   knowsLanguage: ['English', 'Japanese'],
   sameAs: ['https://www.instagram.com/hitomi.l.s_sapporo/'],
   worksFor: {
     '@type': 'LocalBusiness',
-    '@id': 'https://makeupbyhitomi.com/#business',
+    '@id': `${siteUrl}/#business`,
   },
   address: {
     '@type': 'PostalAddress',
@@ -49,13 +50,13 @@ const personSchema = {
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
-  '@id': 'https://makeupbyhitomi.com/#business',
+  '@id': `${siteUrl}/#business`,
   name: 'Hitomi — Bridal Makeup & Hair Artist',
   description:
-    'Professional bridal makeup and wedding hairstyling in Sapporo, Japan. Serving international and Asian clients with elegant, timeless looks.',
-  url: 'https://makeupbyhitomi.com',
-  image: 'https://makeupbyhitomi.com/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg',
-  founder: { '@id': 'https://makeupbyhitomi.com/#hitomi' },
+    'Bridal makeup and wedding hairstyling in Japan, based in Sapporo, Hokkaido. English and Japanese communication, with travel across Japan on request.',
+  url: siteUrl,
+  image: `${siteUrl}/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg`,
+  founder: { '@id': `${siteUrl}/#hitomi` },
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Sapporo',
@@ -69,15 +70,11 @@ const localBusinessSchema = {
   },
   priceRange: '¥¥¥',
   currenciesAccepted: 'JPY',
-  serviceArea: {
-    '@type': 'GeoCircle',
-    geoMidpoint: {
-      '@type': 'GeoCoordinates',
-      latitude: 43.0621,
-      longitude: 141.3544,
-    },
-    geoRadius: '100000',
-  },
+  areaServed: [
+    { '@type': 'City', name: 'Sapporo' },
+    { '@type': 'AdministrativeArea', name: 'Hokkaido' },
+    { '@type': 'Country', name: 'Japan' },
+  ],
   sameAs: ['https://www.instagram.com/hitomi.l.s_sapporo/'],
   knowsLanguage: ['English', 'Japanese'],
 }

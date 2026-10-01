@@ -77,7 +77,7 @@ Articles are written in the client's first-person voice and are an E-E-A-T signa
 
 ## SEO
 
-- `buildMetadata()` in `src/lib/metadata.ts` is the single source of title/description/canonical/OpenGraph/Twitter for every page. Base URL comes from `NEXT_PUBLIC_SITE_URL`, falling back to `https://makeupbyhitomi.com`.
+- `buildMetadata()` in `src/lib/metadata.ts` supplies shared metadata defaults. `src/lib/site.ts` is the single source of the origin for metadata, canonicals, structured data, sitemap and robots. It reads `NEXT_PUBLIC_SITE_URL`, defaults to `https://www.makeupbyhitomi.com`, and normalizes either production hostname to HTTPS + `www` to match the live redirect.
 - `sitemap.ts` and `robots.ts` generate `/sitemap.xml` and `/robots.txt` at build time, blog slugs included.
 - Schema.org JSON-LD: `Person` and `LocalBusiness` in `src/app/layout.tsx` (with geo + 100 km service radius), `BlogPosting` per article, `ItemList` on listings.
 

@@ -1,16 +1,15 @@
 import type { Metadata } from 'next'
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://makeupbyhitomi.com'
+import { siteUrl } from '@/lib/site'
 
 export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: 'Hitomi | Bridal Makeup & Hair Artist in Hokkaido, Japan',
+      default: 'Bridal Makeup Artist in Japan | Hitomi — Sapporo, Hokkaido',
       template: '%s | Hitomi — Bridal Makeup & Hair',
     },
     description:
-      'Professional bridal makeup and wedding hairstyling in Hokkaido, Japan. Serving international and Asian clients with elegant, timeless looks. Contact Hitomi for your special day.',
+      'English-speaking bridal makeup artist and wedding hairstylist in Japan. Based in Sapporo, Hokkaido, with travel across Japan on request. Meet Hitomi.',
     keywords: [
       'bridal makeup Sapporo',
       'wedding hair Sapporo',

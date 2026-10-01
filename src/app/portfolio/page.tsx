@@ -3,12 +3,13 @@ import { buildMetadata } from '@/lib/metadata'
 import PageHero from '@/components/ui/PageHero'
 import PortfolioMarquee from '@/components/portfolio/PortfolioMarquee'
 import { portfolioImages } from '@/data/portfolio'
+import { siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = buildMetadata({
   title: 'Portfolio',
   description:
     'Browse the bridal makeup and wedding hairstyling portfolio of Hitomi Landazabal in Sapporo, Japan. Elegant looks for international and Asian brides in Hokkaido.',
-  alternates: { canonical: 'https://makeupbyhitomi.com/portfolio' },
+  alternates: { canonical: `${siteUrl}/portfolio` },
 })
 
 const gallerySchema = {
@@ -17,10 +18,10 @@ const gallerySchema = {
   name: "Hitomi's Bridal Makeup & Hair Portfolio — Sapporo, Japan",
   description:
     'A collection of bridal makeup and wedding hairstyling work by Hitomi Landazabal in Sapporo, Hokkaido.',
-  url: 'https://makeupbyhitomi.com/portfolio',
+  url: `${siteUrl}/portfolio`,
   image: portfolioImages.map((img) => ({
     '@type': 'ImageObject',
-    contentUrl: `https://makeupbyhitomi.com${img.src}`,
+    contentUrl: `${siteUrl}${img.src}`,
     description: img.alt,
     width: img.width,
     height: img.height,

@@ -16,7 +16,7 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
           <div className="relative aspect-[4/3] md:aspect-auto overflow-hidden">
             <Image
               src={`/images/blog/${post.slug}.jpg`}
-              alt={post.title}
+              alt={post.coverAlt}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -65,7 +65,7 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
             src={`/images/blog/${post.slug}.jpg`}
-            alt={post.title}
+            alt={post.coverAlt}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, 33vw"
