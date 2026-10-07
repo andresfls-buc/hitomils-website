@@ -13,7 +13,7 @@ export default function IntroSection() {
               About the Artist
             </p>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-[#2C2C2C] leading-snug">
-              Your Bridal Makeup Artist in Japan
+              Your Bridal Makeup Artist in Sapporo, Hokkaido
             </h2>
             <div className="mt-5 h-px w-16 bg-[#B8A080]" />
             <p className="mt-8 font-sans text-base text-[#7A7570] leading-relaxed font-light">
@@ -22,6 +22,12 @@ export default function IntroSection() {
               working with clients from around the world, I create looks
               tailored to your features, your dress and the way you want to
               feel on your wedding day.
+            </p>
+            <p className="mt-4 font-sans text-base text-[#7A7570] leading-relaxed font-light">
+              From salon appointments in Sapporo to getting ready at your
+              hotel, I offer bridal makeup and wedding hair together. I also
+              provide makeup and hairstyling for graduation ceremonies,
+              parties, formal events and photo shoots.
             </p>
             <p className="mt-4 font-sans text-base text-[#7A7570] leading-relaxed font-light">
               I work in English and Japanese, so we can plan your bridal look
@@ -35,7 +41,7 @@ export default function IntroSection() {
                 Meet Hitomi
               </Button>
               <Button href="/services" variant="ghost">
-                Bridal Services in Japan
+                Sapporo Bridal Services
               </Button>
             </div>
           </div>

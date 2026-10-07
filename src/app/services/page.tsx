@@ -10,9 +10,9 @@ import ServiceBookingButton from '@/components/services/ServiceBookingButton'
 import { siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Bridal Hair & Makeup in Japan: Services & Pricing',
+  title: { absolute: 'Bridal Hair & Makeup in Sapporo, Hokkaido | Hitomi' },
   description:
-    'English-speaking bridal makeup and hair in Japan, based in Sapporo, Hokkaido. Nationwide travel is available on request.',
+    'Bridal makeup and wedding hair in Sapporo, Hokkaido, Japan. Salon and hotel services, English consultations, and travel across Japan on request.',
   alternates: { canonical: `${siteUrl}/services` },
 })
 
@@ -35,7 +35,7 @@ function extractPrice(price: string): object {
 const serviceSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'Bridal Makeup & Hair Services by Hitomi in Japan',
+  name: 'Bridal Makeup & Hair Services in Sapporo, Hokkaido, Japan by Hitomi',
   itemListElement: services.map((s, i) => ({
     '@type': 'ListItem',
     position: i + 1,
@@ -61,18 +61,27 @@ export default function ServicesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
       />
 
-      <PageHero title="Bridal Hair & Makeup in Japan" subtitle="Services & Pricing" />
+      <PageHero title="Bridal Hair & Makeup in Sapporo" subtitle="Hokkaido, Japan · Services & Pricing" />
 
       {/* Bridal Services */}
       <section className="py-24 md:py-32 px-6">
         <div className="max-w-6xl mx-auto">
           <Reveal>
-            <SectionTitle subtitle="For Your Wedding Day" title="Bridal Services" />
+            <SectionTitle subtitle="For Your Wedding Day" title="Wedding Makeup & Hairstyling" />
           </Reveal>
           <p className="mt-6 max-w-3xl font-sans text-sm text-[#7A7570] leading-relaxed">
-            Based in Sapporo, Hokkaido, I help you plan your bridal hair and makeup
-            in English or Japanese. Travel across Japan is available on request
-            and subject to availability. Travel and accommodation are quoted separately.
+            I&apos;m Hitomi, an English-speaking bridal makeup artist and wedding
+            hairstylist based in Sapporo, Hokkaido, Japan. Choose hair and makeup
+            at a Sapporo salon or get ready in your hotel room with an artist who
+            comes to you. Both bridal services include a pre-wedding consultation,
+            skin preparation, makeup and hairstyling, so we can plan a look that
+            suits your features, dress and wishes.
+          </p>
+          <p className="mt-4 max-w-3xl font-sans text-sm text-[#7A7570] leading-relaxed">
+            Communication is available in English and Japanese, whether you live
+            locally or are travelling to Japan for your wedding. For ceremonies
+            elsewhere in Hokkaido or Japan, share your date and venue to discuss
+            availability, travel and accommodation costs.
           </p>
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
             {bridalServices.map((service, i) => (
@@ -107,8 +116,14 @@ export default function ServicesPage() {
       <section className="py-24 md:py-32 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <Reveal>
-            <SectionTitle subtitle="Parties, Events & More" title="Special Occasions" />
+            <SectionTitle subtitle="Parties, Events & More" title="Occasion Makeup & Hair in Sapporo" />
           </Reveal>
+          <p className="mt-6 max-w-3xl font-sans text-sm text-[#7A7570] leading-relaxed">
+            You can also book makeup or hairstyling for graduation ceremonies,
+            parties, formal dinners and photo shoots in Sapporo. Tell me about
+            your event, outfit and preferred style so we can discuss the service
+            you need. Occasion appointments are quoted individually.
+          </p>
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
             {occasionServices.map((service, i) => (
               <Reveal key={service.id} delay={i * 0.12}>
@@ -134,6 +149,57 @@ export default function ServicesPage() {
                 </div>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Service areas and booking preparation */}
+      <section className="py-24 md:py-32 px-6">
+        <div className="max-w-6xl mx-auto">
+          <Reveal>
+            <SectionTitle subtitle="Where I Work" title="Wedding Hair & Makeup in Hokkaido & Japan" />
+          </Reveal>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 font-sans text-sm text-[#7A7570] leading-relaxed">
+            <div>
+              <h3 className="font-serif text-2xl text-[#2C2C2C] mb-4">Sapporo salon & hotel appointments</h3>
+              <p>
+                Choose a salon appointment or prepare in your hotel room in
+                Sapporo. Hotel bridal appointments include travel within
+                Sapporo city. See the service cards above for starting prices
+                and what is included; your final quote is confirmed after
+                consultation.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-serif text-2xl text-[#2C2C2C] mb-4">Destination weddings in Hokkaido</h3>
+              <p>
+                Planning a wedding in Niseko, Lake Toya or another Hokkaido
+                location? Send your wedding date, venue and getting-ready
+                address to discuss an appointment. Travel outside Sapporo is
+                arranged according to availability, with travel and
+                accommodation costs quoted separately.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-serif text-2xl text-[#2C2C2C] mb-4">Weddings elsewhere in Japan</h3>
+              <p>
+                I am based in Hokkaido and can travel elsewhere in Japan on
+                request, subject to availability. Share your city or venue and
+                schedule when you enquire so we can discuss the travel
+                arrangements and costs. We can plan your wedding look in
+                English or Japanese.
+              </p>
+            </div>
+          </div>
+          <div className="mt-12 max-w-3xl">
+            <h3 className="font-serif text-2xl text-[#2C2C2C]">How to enquire about bridal hair & makeup</h3>
+            <p className="mt-4 font-sans text-sm text-[#7A7570] leading-relaxed">
+              Message me on Instagram with your date, city or venue, the time
+              you need to be ready, and whether you prefer a salon or hotel
+              appointment. Reference photos help explain the hair and makeup
+              you have in mind. For bridal bookings, please enquire at least
+              three months in advance to check availability.
+            </p>
           </div>
         </div>
       </section>
@@ -170,7 +236,7 @@ export default function ServicesPage() {
       <section className="py-24 md:py-32 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <Reveal>
-            <SectionTitle subtitle="Where to Find Us" title="Salon Locations" centered />
+            <SectionTitle subtitle="Sapporo, Hokkaido, Japan" title="Salon Locations in Sapporo" centered />
           </Reveal>
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12">
             <Reveal delay={0}>
@@ -211,9 +277,11 @@ export default function ServicesPage() {
       <section className="py-20 px-6 bg-[#EDD9D1]">
         <div className="max-w-6xl mx-auto text-center">
           <Reveal>
-            <h2 className="font-serif text-4xl md:text-5xl font-light text-[#2C2C2C]">Ready to Begin?</h2>
+            <h2 className="font-serif text-4xl md:text-5xl font-light text-[#2C2C2C]">Plan Your Wedding Hair & Makeup in Japan</h2>
             <p className="mt-4 font-sans text-sm text-[#7A7570] font-light max-w-md mx-auto">
-              Reach out on Instagram to discuss your vision, check availability, and receive a personalised quote.
+              Share your wedding date, venue and preferred service on Instagram
+              to check availability and receive a personalised quote for
+              Sapporo, Hokkaido or your destination wedding elsewhere in Japan.
             </p>
           </Reveal>
           <Reveal delay={0.14}>

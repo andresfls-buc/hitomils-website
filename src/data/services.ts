@@ -5,7 +5,7 @@ export const services: Service[] = [
     id: 'bridal-combo-salon',
     title: 'Bridal Hair & Makeup — At Salon',
     description:
-      'The full bridal experience at the salon — hair and makeup together for a cohesive, harmonious look. A calm, dedicated space to prepare for your most important day.',
+      'Bridal makeup and wedding hairstyling at a Sapporo salon, with a pre-wedding consultation to plan your look. Skin preparation, makeup and an updo or styled finish are included, with communication in English or Japanese.',
     includes: [
       'Full bridal makeup',
       'Bridal hairstyling',
@@ -22,7 +22,7 @@ export const services: Service[] = [
     id: 'bridal-combo-hotel',
     title: 'Bridal Hair & Makeup — At Hotel',
     description:
-      'Hitomi comes to you. Get ready in the comfort of your hotel room with a fully equipped artist on-site — no travel stress on your wedding morning.',
+      'Wedding hair and makeup in your hotel room in Sapporo, Hokkaido. Hitomi brings her kit to you for bridal preparation, with travel to other Hokkaido locations and elsewhere in Japan available on request.',
     includes: [
       'Full bridal makeup',
       'Bridal hairstyling',
@@ -39,7 +39,7 @@ export const services: Service[] = [
     id: 'event-makeup',
     title: 'Special Occasion Makeup',
     description:
-      'For parties, graduation ceremonies, formal dinners, photo shoots, and any moment you want to look your absolute best.',
+      'Makeup in Sapporo for graduation ceremonies, parties, formal dinners and photo shoots. Skin preparation, foundation, eye makeup and finishing are tailored to your event and preferred style.',
     includes: [
       'Foundation & skin prep',
       'Eye makeup & lashes',
@@ -54,7 +54,7 @@ export const services: Service[] = [
     id: 'event-hair',
     title: 'Special Occasion Hairstyling',
     description:
-      'Polished updos, romantic curls, or sleek finishes for any formal event. Perfect for graduation ceremonies, parties, and photo shoots.',
+      'Special occasion hairstyling in Sapporo, Hokkaido, for graduations, parties and photo shoots. Choose an updo, romantic curls or a sleek finish, with hair accessory placement and setting included.',
     includes: [
       'Blow-dry & prep',
       'Styled updo or finish',

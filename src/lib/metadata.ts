@@ -5,11 +5,11 @@ export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: 'Bridal Makeup Artist in Japan | Hitomi — Sapporo, Hokkaido',
+      default: 'Bridal Makeup & Hair in Sapporo, Hokkaido, Japan | Hitomi',
       template: '%s | Hitomi — Bridal Makeup & Hair',
     },
     description:
-      'English-speaking bridal makeup artist and wedding hairstylist in Japan. Based in Sapporo, Hokkaido, with travel across Japan on request. Meet Hitomi.',
+      'English-speaking bridal makeup artist and wedding hairstylist in Sapporo, Hokkaido, Japan. Salon and hotel appointments, with Japan travel on request.',
     keywords: [
       'bridal makeup Sapporo',
       'wedding hair Sapporo',
