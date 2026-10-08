@@ -1,6 +1,10 @@
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import InstagramIcon from '@/components/ui/InstagramIcon'
+import LanguageSwitcher from '@/components/landing/LanguageSwitcher'
+import BrandLogo from '@/components/ui/BrandLogo'
+import { landingCopy } from '@/data/landing'
+import { instagramUrl, landingNav, type LandingLocale } from '@/lib/landing'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -11,14 +15,28 @@ const navLinks = [
   { href: '/contact', label: 'Contact' },
 ]
 
-export default function Footer() {
+export default function Footer({ locale = 'en', landing = false }: { locale?: LandingLocale; landing?: boolean }) {
+  if (landing) {
+    const copy = landingCopy[locale]
+    const nav = landingNav[locale]
+    return (
+      <footer className="bg-[#2C2C2C] px-6 pt-16 pb-28 text-[#FAF7F4] md:pb-16">
+        <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
+          <div><Link href="/" aria-label={locale === 'en' ? 'Hitomi Landazabal — Home' : 'Hitomi Landazabal — 首頁'} className="inline-block transition-opacity hover:opacity-80"><BrandLogo variant="footer" light /></Link><p className="mt-5 text-sm leading-relaxed text-[#FAF7F4]/75">{copy.footerDescription}</p></div>
+          <nav aria-label={nav.navigation} className="flex flex-col items-start gap-4 text-sm text-[#FAF7F4]/80"><a href="#services">{nav.services}</a><a href="#work">{nav.work}</a><a href="#locations">{nav.locations}</a><a href="#faq">{nav.faq}</a></nav>
+          <div><a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 text-sm"><InstagramIcon size={20} />@hitomi.l.s_sapporo</a><div className="mt-6 rounded-sm bg-[#FAF7F4] p-4"><LanguageSwitcher locale={locale} /></div></div>
+        </div>
+        <p className="mx-auto mt-12 max-w-6xl border-t border-white/20 pt-6 text-xs text-[#FAF7F4]/70">© {new Date().getFullYear()} Hitomi Landazabal. {copy.rights}</p>
+      </footer>
+    )
+  }
   return (
     <footer className="bg-[#2C2C2C] text-[#FAF7F4] py-16 px-6">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
         {/* Brand */}
         <div>
-          <Link href="/" className="font-serif text-3xl mb-3 hover:text-[#C9A99A] transition-colors inline-block">
-            Hitomi
+          <Link href="/" aria-label="Hitomi Landazabal — Home" className="mb-3 inline-block transition-opacity hover:opacity-80">
+            <BrandLogo variant="footer" light />
           </Link>
           <p className="font-sans text-sm text-[#B8A080] leading-relaxed">
             Bridal Makeup & Hair Artist

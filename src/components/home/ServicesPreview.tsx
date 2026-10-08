@@ -2,6 +2,7 @@ import Link from 'next/link'
 import SectionTitle from '@/components/ui/SectionTitle'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
+import WeddingLandingLink from '@/components/services/WeddingLandingLink'
 
 const previewServices = [
   {
@@ -29,7 +30,7 @@ const previewServices = [
 
 export default function ServicesPreview() {
   return (
-    <section className="py-24 md:py-32 px-6 bg-white">
+    <section id="services" className="scroll-mt-24 py-24 md:py-32 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
 
         <Reveal>
@@ -60,6 +61,10 @@ export default function ServicesPreview() {
               </div>
             </Reveal>
           ))}
+        </div>
+
+        <div className="mt-10">
+          <WeddingLandingLink />
         </div>
 
         <Reveal delay={0.1}>

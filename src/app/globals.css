@@ -57,6 +57,17 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
 }
 
+/* System CJK fonts keep localized pages readable without a heavy font download. */
+html:lang(zh-HK), html:lang(zh-TW) {
+  --font-sans: var(--font-jost), "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), "Songti TC", "Noto Serif CJK TC", "PMingLiU", serif;
+}
+
+.bridal-landing a:focus-visible {
+  outline: 2px solid #A8796A;
+  outline-offset: 4px;
+}
+
 /* Blog prose styles */
 .prose {
   color: #4A4542;

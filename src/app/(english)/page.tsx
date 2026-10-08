@@ -20,6 +20,12 @@ const localBusinessSchema = {
   name: 'Hitomi — Bridal Makeup & Hair Artist',
   url: siteUrl,
   image: `${siteUrl}/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg`,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${siteUrl}/brand/hl-master.png`,
+    width: 1040,
+    height: 729,
+  },
   description:
     'English-speaking bridal makeup artist and wedding hairstylist based in Sapporo, Hokkaido. Serving international and Asian brides, with travel across Japan on request.',
   address: {

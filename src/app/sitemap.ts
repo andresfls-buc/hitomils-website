@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getAllPosts } from '@/lib/blog'
 import { siteUrl } from '@/lib/site'
+import { landingLocaleKeys, landingLocales, landingPath } from '@/lib/landing'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts()
@@ -50,5 +51,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     ...blogEntries,
+    ...landingLocaleKeys.map((locale) => ({
+      url: `${siteUrl}${landingPath(locale)}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.9,
+      alternates: { languages: Object.fromEntries(landingLocaleKeys.map((key) => [landingLocales[key].lang, `${siteUrl}${landingPath(key)}`])) },
+    })),
   ]
 }

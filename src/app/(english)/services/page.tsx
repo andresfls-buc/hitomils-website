@@ -7,6 +7,7 @@ import Reveal from '@/components/ui/Reveal'
 import { services, addOns } from '@/data/services'
 import { Check } from 'lucide-react'
 import ServiceBookingButton from '@/components/services/ServiceBookingButton'
+import WeddingLandingLink from '@/components/services/WeddingLandingLink'
 import { siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = buildMetadata({
@@ -83,6 +84,9 @@ export default function ServicesPage() {
             elsewhere in Hokkaido or Japan, share your date and venue to discuss
             availability, travel and accommodation costs.
           </p>
+          <div className="mt-8">
+            <WeddingLandingLink />
+          </div>
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
             {bridalServices.map((service, i) => (
               <Reveal key={service.id} delay={i * 0.12}>

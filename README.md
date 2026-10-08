@@ -36,7 +36,19 @@ Because of this, the two things that actually matter in this repo are **SEO meta
 | `/blog` | Article index |
 | `/blog/[slug]` | Article page (MDX), statically generated per slug |
 | `/contact` | Instagram DM as primary contact, location, hours, booking lead-time note |
+| `/en/wedding-hair-makeup-japan` | English landing for weddings and pre-wedding enquiries in Japan, Hokkaido and Sapporo |
+| `/zh-hk/wedding-hair-makeup-japan` | Traditional Chinese landing localized for Hong Kong |
+| `/zh-tw/wedding-hair-makeup-japan` | Traditional Chinese landing localized for Taiwan |
+| `/wedding-hair-makeup-japan` | Main landing entry, redirects to Traditional Chinese (Taiwan) |
 | `/sitemap.xml`, `/robots.txt` | Generated at build time from the blog directory |
+
+The three landing variants share `src/components/landing/BridalLanding.tsx` and copy in `src/data/landing.ts`. Their language selector is available on the landing page, including its footer. The main site links to the Taiwan landing through its navigation and wedding callouts. All enquiries, quotes, payments and bookings remain manual on Instagram; translated pages explicitly state that Hitomi communicates in English and Japanese. Starting prices are read from `src/data/services.ts`.
+
+Traditional Chinese is the landing default. The main site's `繁體中文` navigation link opens the Taiwan version; the selector offers Taiwan, Hong Kong, then English. Explicit locale URLs keep their selected language, with no automatic location or browser-language redirects. The default locale lives in `src/lib/landing.ts` and is reused for the entry redirect and SEO `x-default` alternate.
+
+To preview locally, run `npm run dev` and open `http://127.0.0.1:3000/wedding-hair-makeup-japan`. Development previews do not send analytics. Production tracks `landing_view` and landing CTA `contact_click` using fixed locale/placement labels, without client details. A click is not counted as a booking.
+
+Original pages live under `src/app/(english)` with their existing URLs. Localized pages have a separate root layout under `src/app/[locale]` so their HTML language is correct while all routes stay static. Both roots reuse `src/components/layout/SiteLayout.tsx`; switching between roots loads a new document.
 
 ## Services & pricing
 
@@ -79,7 +91,7 @@ Articles are written in the client's first-person voice and are an E-E-A-T signa
 
 - `buildMetadata()` in `src/lib/metadata.ts` supplies shared metadata defaults. `src/lib/site.ts` is the single source of the origin for metadata, canonicals, structured data, sitemap and robots. It reads `NEXT_PUBLIC_SITE_URL`, defaults to `https://www.makeupbyhitomi.com`, and normalizes either production hostname to HTTPS + `www` to match the live redirect.
 - `sitemap.ts` and `robots.ts` generate `/sitemap.xml` and `/robots.txt` at build time, blog slugs included.
-- Schema.org JSON-LD: `Person` and `LocalBusiness` in `src/app/layout.tsx` (with geo + 100 km service radius), `BlogPosting` per article, `ItemList` on listings.
+- Schema.org JSON-LD: `Person` and `LocalBusiness` in `src/components/layout/SiteLayout.tsx`, `BlogPosting` per article, `ItemList` on listings.
 
 > When the Instagram handle, domain, or business details change, they must be updated in **every** JSON-LD `sameAs`/`url` field as well as the visible links — `grep -rn "instagram.com\|makeupbyhitomi.com" src/` before calling it done.
 

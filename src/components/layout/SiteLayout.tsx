@@ -1,10 +1,9 @@
-import type { Metadata } from 'next'
 import { Cormorant_Garamond, Jost } from 'next/font/google'
 import Script from 'next/script'
-import './globals.css'
+import '@/app/globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import { buildMetadata } from '@/lib/metadata'
+import { landingLocales, type LandingLocale } from '@/lib/landing'
 import { siteUrl } from '@/lib/site'
 
 const cormorant = Cormorant_Garamond({
@@ -20,8 +19,6 @@ const jost = Jost({
   variable: '--font-jost',
   display: 'swap',
 })
-
-export const metadata: Metadata = buildMetadata()
 
 const personSchema = {
   '@context': 'https://schema.org',
@@ -56,6 +53,12 @@ const localBusinessSchema = {
     'Bridal makeup and wedding hairstyling in Japan, based in Sapporo, Hokkaido. English and Japanese communication, with travel across Japan on request.',
   url: siteUrl,
   image: `${siteUrl}/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg`,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${siteUrl}/brand/hl-master.png`,
+    width: 1040,
+    height: 729,
+  },
   founder: { '@id': `${siteUrl}/#hitomi` },
   address: {
     '@type': 'PostalAddress',
@@ -79,14 +82,18 @@ const localBusinessSchema = {
   knowsLanguage: ['English', 'Japanese'],
 }
 
-export default function RootLayout({
+export default function SiteLayout({
   children,
+  locale = 'en',
+  landing = false,
 }: Readonly<{
   children: React.ReactNode
+  locale?: LandingLocale
+  landing?: boolean
 }>) {
   return (
     <html
-      lang="en"
+      lang={landingLocales[locale].lang}
       className={`${cormorant.variable} ${jost.variable} h-full antialiased`}
     >
       <head>
@@ -100,7 +107,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-[#FAF7F4] text-[#2C2C2C]">
-        <Script
+        {process.env.NODE_ENV === 'production' && <><Script
           src="https://www.googletagmanager.com/gtag/js?id=G-5B5KJV854H"
           strategy="afterInteractive"
         />
@@ -121,9 +128,10 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "wdcr9p47cd");
           `}
         </Script>
-        <Header />
+        </>}
+        <Header locale={locale} />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <Footer locale={locale} landing={landing} />
       </body>
     </html>
   )
