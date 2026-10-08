@@ -84,7 +84,8 @@ void main() {
 }`
 
 export function createLiquidGlassRenderer(canvas: HTMLCanvasElement) {
-  const gl = canvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false })
+  // Frames are drawn on demand, so keep the last photo while the carousel is idle.
+  const gl = canvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false, preserveDrawingBuffer: true })
   if (!gl) return null
   const shaders: WebGLShader[] = []
   const buffers: WebGLBuffer[] = []
@@ -140,23 +141,37 @@ export function createLiquidGlassRenderer(canvas: HTMLCanvasElement) {
     gl.uniform1i(locations.u_image, 0)
     gl.clearColor(0, 0, 0, 0)
     const upload = (image: HTMLImageElement, key: number) => {
-      if (textures.has(key) || !image.complete || !image.naturalWidth) return
+      // Safari can report complete/naturalWidth before decoded pixels are usable.
+      // Next Image's onLoad runs after decode; never cache an earlier blank copy.
+      if (textures.has(key) || image.dataset.glassReady !== 'true' || !image.complete || !image.naturalWidth) return
       const texture = gl.createTexture()
       if (!texture) return
       // Bound texture memory even on high-DPR phones; retain the sharp DOM fallback.
       const source = document.createElement('canvas')
       source.width = Math.min(image.naturalWidth, 640)
       source.height = Math.round(source.width * image.naturalHeight / image.naturalWidth)
-      const context = source.getContext('2d')
+      const context = source.getContext('2d', { willReadFrequently: true })
       if (!context) { gl.deleteTexture(texture); return }
-      context.drawImage(image, 0, 0, source.width, source.height)
-      gl.bindTexture(gl.TEXTURE_2D, texture)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source)
-      textures.set(key, { texture, aspect: image.naturalWidth / image.naturalHeight })
+      try {
+        context.drawImage(image, 0, 0, source.width, source.height)
+        // Upload explicit pixels instead of sharing a 2D canvas's GPU surface.
+        // A failed upload must never count as a ready photo and hide the DOM image.
+        const pixels = context.getImageData(0, 0, source.width, source.height)
+        if (!pixels.data.some((value, index) => index % 4 === 3 && value !== 0)) {
+          gl.deleteTexture(texture)
+          return
+        }
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.width, source.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels.data)
+        if (gl.getError() !== gl.NO_ERROR) { gl.deleteTexture(texture); return }
+        textures.set(key, { texture, aspect: image.naturalWidth / image.naturalHeight })
+      } catch {
+        gl.deleteTexture(texture)
+      }
     }
     return {
       draw({ width, height, cardWidth, cardHeight, step, inset, scroll, count, motion, images }: {
@@ -191,7 +206,7 @@ export function createLiquidGlassRenderer(canvas: HTMLCanvasElement) {
           gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0)
           if (index === current) centerReady = true
         }
-        return centerReady
+        return centerReady && gl.getError() === gl.NO_ERROR
       },
       dispose,
     }

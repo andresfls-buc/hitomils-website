@@ -42,7 +42,13 @@ export default function LiquidGlassCarousel({ images, locale }: { images: Landin
       const delta = Math.abs(track.scrollLeft - previousScroll)
       const motion = delta > count * step / 2 ? 0 : Math.min(delta / 45, 1)
       previousScroll = track.scrollLeft
-      const ready = renderer?.draw({ width, height, cardWidth, cardHeight, step, inset, scroll: track.scrollLeft, count, motion, images: Array.from(track.querySelectorAll<HTMLImageElement>('img')) })
+      let ready = false
+      try {
+        ready = renderer?.draw({ width, height, cardWidth, cardHeight, step, inset, scroll: track.scrollLeft, count, motion, images: Array.from(track.querySelectorAll<HTMLImageElement>('img')) }) ?? false
+      } catch {
+        renderer?.dispose()
+        renderer = null
+      }
       track.dataset.glass = ready ? 'true' : 'false'
       if (motion > 0.005 && renderer) frame = requestAnimationFrame(draw)
     }
@@ -92,6 +98,11 @@ export default function LiquidGlassCarousel({ images, locale }: { images: Landin
     canvas.addEventListener('webglcontextlost', onContextLost)
     canvas.addEventListener('webglcontextrestored', onContextRestored)
     motionQuery.addEventListener('change', onMotionChange)
+    const visibility = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) schedule() })
+    visibility.observe(track)
+    const onPageVisible = () => { if (!document.hidden) schedule() }
+    document.addEventListener('visibilitychange', onPageVisible)
+    window.addEventListener('pageshow', schedule)
     measure()
     return () => {
       disposed = true; redrawRef.current = () => {}
@@ -102,6 +113,9 @@ export default function LiquidGlassCarousel({ images, locale }: { images: Landin
       canvas.removeEventListener('webglcontextlost', onContextLost)
       canvas.removeEventListener('webglcontextrestored', onContextRestored)
       motionQuery.removeEventListener('change', onMotionChange)
+      visibility.disconnect()
+      document.removeEventListener('visibilitychange', onPageVisible)
+      window.removeEventListener('pageshow', schedule)
       renderer?.dispose()
     }
   }, [count])
@@ -192,7 +206,7 @@ export default function LiquidGlassCarousel({ images, locale }: { images: Landin
         >
           {[0, 1, 2].flatMap(set => images.map((photo, index) => (
             <figure key={`${set}-${photo.src}`} className={styles.card} aria-hidden={set !== 1 ? true : undefined}>
-              <Image src={photo.src} alt={set === 1 ? photo.captions[locale] : ''} fill sizes="(max-width: 767px) 248px, (max-width: 1280px) 340px, 380px" className={styles.image} data-gallery-index={index} draggable={false} onLoad={() => redrawRef.current()} />
+              <Image src={photo.src} alt={set === 1 ? photo.captions[locale] : ''} fill sizes="(max-width: 767px) 248px, (max-width: 1280px) 340px, 380px" className={styles.image} data-gallery-index={index} draggable={false} onLoad={(event) => { event.currentTarget.dataset.glassReady = 'true'; redrawRef.current() }} />
             </figure>
           )))}
         </div>
