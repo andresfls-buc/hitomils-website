@@ -7,7 +7,7 @@ import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import LanguageSwitcher from '@/components/landing/LanguageSwitcher'
 import BrandLogo from '@/components/ui/BrandLogo'
-import { landingEntryPath, landingNav, landingPath, type LandingLocale } from '@/lib/landing'
+import { landingNav, landingPath, type LandingLocale } from '@/lib/landing'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -119,10 +119,10 @@ export default function Header({ locale = 'en' }: { locale?: LandingLocale }) {
                 {label}
               </Link>
             ))}
-            {isLanding ? <details className={cn('relative text-xs', textColor)}>
+            {isLanding && <details className={cn('relative text-xs', textColor)}>
               <summary className="cursor-pointer py-3">{locale === 'en' ? 'Language / 語言' : '語言'}</summary>
               <div className="absolute right-0 top-full w-64 border border-[#DDD1C7] bg-[#FAF7F4] p-5 shadow-sm"><LanguageSwitcher locale={locale} /></div>
-            </details> : <Link href={landingEntryPath} lang="zh-Hant" className={cn('py-3 text-xs transition-colors hover:text-[#C9A99A]', textColor)}>繁體中文</Link>}
+            </details>}
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -184,7 +184,7 @@ export default function Header({ locale = 'en' }: { locale?: LandingLocale }) {
               {label}
             </Link>
           ))}
-          <div className="border-t border-[#DDD1C7] pt-5" onClick={() => setMenuOpen(false)}><LanguageSwitcher locale={locale} /></div>
+          {isLanding && <div className="border-t border-[#DDD1C7] pt-5" onClick={() => setMenuOpen(false)}><LanguageSwitcher locale={locale} /></div>}
         </nav>
         <div className="mt-auto px-6 pb-8">
           <p className="font-sans text-xs uppercase tracking-widest text-[#7A7570]">
