@@ -35,8 +35,7 @@ export default function BridalLanding({ locale }: { locale: LandingLocale }) {
           <div className="max-w-xl"><Eyebrow>{copy.servicesEyebrow}</Eyebrow><h2 className="text-4xl font-light md:text-5xl">{copy.servicesTitle}</h2><p className="mt-5 text-sm leading-[1.9] text-[#625D58]">{copy.servicesIntro}</p></div>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {copy.services.map((service, index) => <article key={service.title} className="border border-[#DDD1C7] bg-white/50 p-7 md:p-10">
-              <span className="font-serif text-lg text-[#916452]">0{index + 1}</span>
-              <h3 className="mt-4 text-3xl font-light">{service.title}</h3>
+              <h3 className="text-3xl font-light">{service.title}</h3>
               <p className="mt-4 min-h-16 text-sm leading-relaxed text-[#625D58]">{service.description}</p>
               <p className="mt-7 font-serif text-4xl">{bridalServices[index].price}</p><p className="mt-2 text-xs leading-relaxed text-[#625D58]">{service.priceNote}</p>
               <ul className="my-7 space-y-3 border-t border-[#DDD1C7] pt-6">{service.includes.map((item) => <li key={item} className="flex gap-3 text-sm text-[#625D58]"><Check size={15} className="mt-0.5 shrink-0 text-[#916452]" />{item}</li>)}</ul>
@@ -62,11 +61,11 @@ export default function BridalLanding({ locale }: { locale: LandingLocale }) {
       </section>
 
       <section id="locations" className="scroll-mt-24 bg-[#2C2C2C] px-6 py-20 text-[#FAF7F4] md:py-24">
-        <div className="mx-auto max-w-6xl"><Eyebrow light>{copy.locationsEyebrow}</Eyebrow><h2 className="text-4xl font-light md:text-5xl">{copy.locationsTitle}</h2><div className="mt-10 grid gap-8 md:grid-cols-3 md:gap-12">{copy.locations.map((location, index) => <article key={location.title} className="border-t border-white/25 pt-6"><span className="text-xs text-[#EDD9D1]">0{index + 1}</span><h3 className="mt-4 text-3xl font-light">{location.title}</h3><p className="mt-4 text-sm leading-[1.9] text-[#FAF7F4]/80">{location.text}</p></article>)}</div></div>
+        <div className="mx-auto max-w-6xl"><Eyebrow light>{copy.locationsEyebrow}</Eyebrow><h2 className="text-4xl font-light md:text-5xl">{copy.locationsTitle}</h2><div className="mt-10 grid gap-8 md:grid-cols-3 md:gap-12">{copy.locations.map((location) => <article key={location.title} className="border-t border-white/25 pt-6"><h3 className="text-3xl font-light">{location.title}</h3><p className="mt-4 text-sm leading-[1.9] text-[#FAF7F4]/80">{location.text}</p></article>)}</div></div>
       </section>
 
       <section className="px-6 py-20 md:py-28">
-        <div className="mx-auto max-w-6xl"><Eyebrow>{copy.stepsEyebrow}</Eyebrow><h2 className="text-4xl font-light md:text-5xl">{copy.stepsTitle}</h2><ol className="mt-12 grid gap-8 md:grid-cols-3 md:gap-12">{copy.steps.map((step, index) => <li key={step.title}><span className="font-serif text-5xl font-light text-[#916452]">0{index + 1}</span><h3 className="mt-5 text-2xl">{step.title}</h3><p className="mt-3 text-sm leading-[1.9] text-[#625D58]">{step.text}</p></li>)}</ol></div>
+        <div className="mx-auto max-w-6xl"><Eyebrow>{copy.stepsEyebrow}</Eyebrow><h2 className="text-4xl font-light md:text-5xl">{copy.stepsTitle}</h2><ol className="mt-12 grid gap-8 md:grid-cols-3 md:gap-12">{copy.steps.map((step) => <li key={step.title}><h3 className="text-2xl">{step.title}</h3><p className="mt-3 text-sm leading-[1.9] text-[#625D58]">{step.text}</p></li>)}</ol></div>
       </section>
 
       <section id="faq" className="scroll-mt-24 border-t border-[#DDD1C7] px-6 py-20 md:py-24">

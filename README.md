@@ -42,9 +42,9 @@ Because of this, the two things that actually matter in this repo are **SEO meta
 | `/wedding-hair-makeup-japan` | Main landing entry, redirects to Traditional Chinese (Taiwan) |
 | `/sitemap.xml`, `/robots.txt` | Generated at build time from the blog directory |
 
-The three landing variants share `src/components/landing/BridalLanding.tsx` and copy in `src/data/landing.ts`. Their language selector is available on the landing page, including its footer. The main site links to the Taiwan landing through its navigation and wedding callouts. All enquiries, quotes, payments and bookings remain manual on Instagram; translated pages explicitly state that Hitomi communicates in English and Japanese. Starting prices are read from `src/data/services.ts`.
+The three landing variants share `src/components/landing/BridalLanding.tsx` and copy in `src/data/landing.ts`. The main site's navigation is in English; language choices are available within the campaign landing pages, including their footer. Wedding callouts on the main site link to the landing. All enquiries, quotes, payments and bookings remain manual on Instagram; translated pages explicitly state that Hitomi communicates in English and Japanese. Starting prices are read from `src/data/services.ts`.
 
-Traditional Chinese is the landing default. The main site's `繁體中文` navigation link opens the Taiwan version; the selector offers Taiwan, Hong Kong, then English. Explicit locale URLs keep their selected language, with no automatic location or browser-language redirects. The default locale lives in `src/lib/landing.ts` and is reused for the entry redirect and SEO `x-default` alternate.
+Traditional Chinese is the landing default. The campaign language selector offers Taiwan, Hong Kong, then English. Explicit locale URLs keep their selected language, with no automatic location or browser-language redirects. The default locale lives in `src/lib/landing.ts` and is reused for the entry redirect and SEO `x-default` alternate.
 
 To preview locally, run `npm run dev` and open `http://127.0.0.1:3000/wedding-hair-makeup-japan`. Development previews do not send analytics. Production tracks `landing_view` and landing CTA `contact_click` using fixed locale/placement labels, without client details. A click is not counted as a booking.
 
