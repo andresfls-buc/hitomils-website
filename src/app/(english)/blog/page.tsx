@@ -4,12 +4,13 @@ import { getAllPosts } from '@/lib/blog'
 import PageHero from '@/components/ui/PageHero'
 import BlogCard from '@/components/blog/BlogCard'
 import Reveal from '@/components/ui/Reveal'
+import { siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = buildMetadata({
   title: 'Wedding & Bridal Beauty Blog',
   description:
     'Expert advice on wedding makeup, bridal hairstyling, and planning your beauty for a destination wedding in Japan. Written by Hitomi, a professional bridal artist in Sapporo, Hokkaido.',
-  alternates: { canonical: 'https://makeupbyhitomi.com/blog' },
+  alternates: { canonical: `${siteUrl}/blog` },
   openGraph: {
     type: 'website',
     title: 'Wedding & Bridal Beauty Blog | Hitomi — Sapporo, Japan',

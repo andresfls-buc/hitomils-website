@@ -5,18 +5,19 @@ import SectionTitle from '@/components/ui/SectionTitle'
 import Reveal from '@/components/ui/Reveal'
 import { MapPin, Clock, Mail } from 'lucide-react'
 import InstagramIcon from '@/components/ui/InstagramIcon'
+import { siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Contact',
+  title: { absolute: 'Book Bridal Hair & Makeup in Sapporo, Japan | Hitomi' },
   description:
-    'Contact Hitomi Landazabal, bridal makeup and hair artist in Sapporo, Japan. Reach out via Instagram to inquire about availability and pricing for your wedding day.',
-  alternates: { canonical: 'https://makeupbyhitomi.com/contact' },
+    'Contact English-speaking bridal makeup and hair artist Hitomi in Sapporo, Hokkaido. Japan travel is available on request; inquire about your wedding date and venue.',
+  alternates: { canonical: `${siteUrl}/contact` },
 })
 
 export default function ContactPage() {
   return (
     <>
-      <PageHero title="Get in Touch" subtitle="Contact" />
+      <PageHero title="Enquire About Bridal Hair & Makeup" subtitle="Sapporo · Hokkaido · Japan" />
 
       <section className="py-24 md:py-32 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
@@ -27,8 +28,14 @@ export default function ContactPage() {
               <SectionTitle subtitle="Primary Contact" title="Instagram" />
               <p className="mt-8 font-sans text-base text-[#7A7570] leading-relaxed font-light">
                 The best way to reach me is through Instagram. Send me a direct message
-                to discuss your wedding date, vision, and any questions you have.
-                I typically respond within 24 hours.
+                with your wedding date, venue or city, the time you need to be ready,
+                your preferred service and any reference photos so I can discuss
+                availability and your vision. Let me know whether you would like
+                bridal hair and makeup at a Sapporo salon or in your hotel room,
+                or makeup and hairstyling for a special occasion.
+                I&apos;m based in Sapporo, Hokkaido,
+                and travel elsewhere in Japan is available on request. I typically respond
+                within 24 hours.
               </p>
               <a
                 href="https://www.instagram.com/hitomi.l.s_sapporo/?utm_source=ig_web_button_share_sheet"

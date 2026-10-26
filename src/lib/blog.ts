@@ -10,6 +10,7 @@ export interface BlogPost {
   title: string
   description: string
   date: string
+  updated?: string
   dateFormatted: string
   category: string
   tags: string[]
@@ -44,6 +45,7 @@ export function getAllPosts(): BlogPost[] {
       title: data.title as string,
       description: data.description as string,
       date: data.date as string,
+      updated: data.updated as string | undefined,
       dateFormatted: formatDate(data.date as string),
       category: data.category as string,
       tags: (data.tags as string[]) || [],
@@ -66,6 +68,7 @@ export function getPostBySlug(slug: string): BlogPostWithContent {
     title: data.title as string,
     description: data.description as string,
     date: data.date as string,
+    updated: data.updated as string | undefined,
     dateFormatted: formatDate(data.date as string),
     category: data.category as string,
     tags: (data.tags as string[]) || [],

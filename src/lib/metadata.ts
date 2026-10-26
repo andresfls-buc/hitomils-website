@@ -1,16 +1,15 @@
 import type { Metadata } from 'next'
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://makeupbyhitomi.com'
+import { siteUrl } from '@/lib/site'
 
 export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
-  return {
+  const defaults: Metadata = {
     metadataBase: new URL(siteUrl),
     title: {
-      default: 'Hitomi | Bridal Makeup & Hair Artist in Hokkaido, Japan',
-      template: '%s | Hitomi — Bridal Makeup & Hair',
+      default: 'Bridal Makeup & Hair in Sapporo, Hokkaido, Japan | Hitomi',
+      template: '%s | Hitomi',
     },
     description:
-      'Professional bridal makeup and wedding hairstyling in Hokkaido, Japan. Serving international and Asian clients with elegant, timeless looks. Contact Hitomi for your special day.',
+      'English-speaking bridal makeup artist and wedding hairstylist in Sapporo, Hokkaido, Japan. Salon and hotel appointments, with Japan travel on request.',
     keywords: [
       'bridal makeup Sapporo',
       'wedding hair Sapporo',
@@ -43,6 +42,18 @@ export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
       index: true,
       follow: true,
     },
+  }
+
+  return {
+    ...defaults,
     ...overrides,
+    // Pages often override only the social title or description. Keep the
+    // shared cover image unless a page explicitly replaces or removes it.
+    openGraph: overrides.openGraph === null
+      ? null
+      : { ...defaults.openGraph, ...overrides.openGraph },
+    twitter: overrides.twitter === null
+      ? null
+      : { ...defaults.twitter, ...overrides.twitter },
   }
 }

@@ -1,0 +1,8 @@
+Use case: photorealistic-natural.
+Asset type: landscape editorial cover for an English-language bridal beauty blog about Japan destination weddings, creative wedding photo shoots, photo-only weddings and solo weddings.
+Primary request: Create an original, elegant bridal portrait illustrating a solo bridal photo shoot in a Hokkaido-inspired landscape in Japan.
+Scene/backdrop: a quiet lake with forested hills and distant mountains, soft morning light, a natural accessible lakeside setting.
+Subject: one adult East Asian woman in an ivory wedding dress, with a flowing translucent veil, refined natural bridal makeup, soft rose lips, luminous realistic skin texture, and an elegant loosely gathered hairstyle with a few controlled strands. She is relaxed and self-possessed, looking gently toward the camera, captured in a three-quarter portrait. The veil moves lightly in the breeze to give the image a creative editorial feeling.
+Composition/framing: horizontal landscape around 1536x1024; subject near the centre so the portrait works when centre-cropped for a mobile blog hero and a 4:3 article card. Leave breathing room around her. Beautiful scenery remains secondary to the hair and makeup. One continuous photographic composition.
+Lighting/mood: soft natural light, subtle romantic atmosphere, tasteful high-end bridal magazine photography. Muted ivory, soft green, lake blue and warm neutral tones.
+Constraints: a fictional adult model; anatomically natural face and hands; realistic fabric and hair; no other people, no ceremony setup, no text, no letters, no logos, no watermark, no collage. This is an original AI editorial concept, not a record of a real client's wedding.

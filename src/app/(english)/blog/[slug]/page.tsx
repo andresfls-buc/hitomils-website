@@ -7,6 +7,7 @@ import { buildMetadata } from '@/lib/metadata'
 import { getAllSlugs, getPostBySlug, getAllPosts } from '@/lib/blog'
 import { Clock, ArrowLeft, Tag } from 'lucide-react'
 import InstagramIcon from '@/components/ui/InstagramIcon'
+import { siteUrl } from '@/lib/site'
 
 export function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }))
@@ -25,20 +26,19 @@ export async function generateMetadata({
   return buildMetadata({
     title: post.title,
     description: post.description,
-    alternates: { canonical: `https://makeupbyhitomi.com/blog/${slug}` },
+    alternates: { canonical: `${siteUrl}/blog/${slug}` },
     openGraph: {
       type: 'article',
       title: post.title,
       description: post.description,
       publishedTime: post.date,
+      modifiedTime: post.updated ?? post.date,
       authors: ['Hitomi Landazabal'],
       tags: post.tags,
       images: [
         {
-          url: `https://makeupbyhitomi.com/images/blog/${slug}.jpg`,
-          width: 1200,
-          height: 630,
-          alt: post.title,
+          url: `${siteUrl}/images/blog/${slug}.jpg`,
+          alt: post.coverAlt,
         },
       ],
     },
@@ -65,25 +65,26 @@ export default async function BlogPostPage({
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.description,
+    image: `${siteUrl}/images/blog/${slug}.jpg`,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updated ?? post.date,
     author: {
-      '@id': 'https://makeupbyhitomi.com/#hitomi',
+      '@id': `${siteUrl}/#hitomi`,
       '@type': 'Person',
       name: 'Hitomi Landazabal',
-      url: 'https://makeupbyhitomi.com/about',
-      image: 'https://makeupbyhitomi.com/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg',
+      url: `${siteUrl}/about`,
+      image: `${siteUrl}/images/about/hitomi-landazabal-bridal-makeup-artist-sapporo.jpg`,
       jobTitle: 'Bridal Makeup & Hair Artist',
     },
     publisher: {
-      '@id': 'https://makeupbyhitomi.com/#business',
+      '@id': `${siteUrl}/#business`,
       '@type': 'LocalBusiness',
       name: 'Hitomi — Bridal Makeup & Hair Artist',
-      url: 'https://makeupbyhitomi.com',
+      url: siteUrl,
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://makeupbyhitomi.com/blog/${slug}`,
+      '@id': `${siteUrl}/blog/${slug}`,
     },
     keywords: post.tags.join(', '),
     articleSection: post.category,
@@ -94,7 +95,7 @@ export default async function BlogPostPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema).replace(/</g, '\\u003c') }}
       />
 
       {/* Article Hero */}
@@ -102,7 +103,7 @@ export default async function BlogPostPage({
         {/* Background image */}
         <Image
           src={`/images/blog/${slug}.jpg`}
-          alt={post.title}
+          alt={post.coverAlt}
           fill
           className="object-cover object-center"
           priority

@@ -2,26 +2,27 @@ import Link from 'next/link'
 import SectionTitle from '@/components/ui/SectionTitle'
 import Button from '@/components/ui/Button'
 import Reveal from '@/components/ui/Reveal'
+import WeddingLandingLink from '@/components/services/WeddingLandingLink'
 
 const previewServices = [
   {
     title: 'Bridal Hair & Makeup — At Salon',
     description:
-      'The full bridal experience at the salon — hair and makeup together for a cohesive, harmonious look on your most important day.',
+      'Bridal makeup and wedding hairstyling at a Sapporo salon, with an English or Japanese consultation to plan your look.',
     from: '¥12,000〜',
     href: '/services#bridal-combo-salon',
   },
   {
     title: 'Bridal Hair & Makeup — At Hotel',
     description:
-      'Hitomi comes to you. Get ready in the comfort of your hotel room with a fully equipped artist on-site.',
+      'Wedding hair and makeup in your Sapporo hotel room. Travel across Hokkaido and elsewhere in Japan is available on request.',
     from: '¥22,000〜',
     href: '/services#bridal-combo-hotel',
   },
   {
     title: 'Special Occasions',
     description:
-      'Graduation ceremonies, parties, photo shoots — any moment you want to look and feel your very best.',
+      'Makeup and hairstyling in Sapporo for graduations, parties, formal events and photo shoots.',
     from: 'On request',
     href: '/services#event-makeup',
   },
@@ -29,11 +30,11 @@ const previewServices = [
 
 export default function ServicesPreview() {
   return (
-    <section className="py-24 md:py-32 px-6 bg-white">
+    <section id="services" className="scroll-mt-24 py-24 md:py-32 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
 
         <Reveal>
-          <SectionTitle subtitle="What I Offer" title="Services & Pricing" centered />
+          <SectionTitle subtitle="Sapporo · Hokkaido · Japan" title="Bridal & Occasion Services" centered />
         </Reveal>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -54,12 +55,16 @@ export default function ServicesPreview() {
                   href={service.href}
                   className="mt-4 inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-[#2C2C2C] hover:text-[#C9A99A] transition-colors group-hover:gap-3"
                 >
-                  See Details
+                  View Service
                   <span aria-hidden>→</span>
                 </Link>
               </div>
             </Reveal>
           ))}
+        </div>
+
+        <div className="mt-10">
+          <WeddingLandingLink />
         </div>
 
         <Reveal delay={0.1}>

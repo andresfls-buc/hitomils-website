@@ -1,55 +1,62 @@
 import type { MetadataRoute } from 'next'
 import { getAllPosts } from '@/lib/blog'
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://makeupbyhitomi.com'
+import { siteUrl } from '@/lib/site'
+import { landingLocaleKeys, landingLocales, landingPath } from '@/lib/landing'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts()
 
   const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: new Date(post.updated ?? post.date),
     changeFrequency: 'monthly',
     priority: 0.7,
   }))
 
+  const latestPostUpdate = posts.reduce<string | undefined>((latest, post) => {
+    const updated = post.updated ?? post.date
+    return !latest || updated > latest ? updated : latest
+  }, undefined)
+
+  // Omit dates we do not track; a new build does not mean every page changed.
   return [
     {
       url: siteUrl,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 1,
     },
     {
       url: `${siteUrl}/services`,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
       url: `${siteUrl}/portfolio`,
-      lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${siteUrl}/blog`,
-      lastModified: new Date(),
+      lastModified: latestPostUpdate ? new Date(latestPostUpdate) : undefined,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${siteUrl}/about`,
-      lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.7,
     },
     {
       url: `${siteUrl}/contact`,
-      lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.7,
     },
     ...blogEntries,
+    ...landingLocaleKeys.map((locale) => ({
+      url: `${siteUrl}${landingPath(locale)}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.9,
+      alternates: { languages: Object.fromEntries(landingLocaleKeys.map((key) => [landingLocales[key].lang, `${siteUrl}${landingPath(key)}`])) },
+    })),
   ]
 }
