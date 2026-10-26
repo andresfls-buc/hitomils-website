@@ -1,6 +1,7 @@
 import SectionTitle from '@/components/ui/SectionTitle'
 import Reveal from '@/components/ui/Reveal'
 import { testimonials } from '@/data/testimonials'
+import { googleBusinessProfileUrl } from '@/lib/business'
 
 function Stars({ count }: { count: number }) {
   return (
@@ -68,7 +69,7 @@ export default function TestimonialsSection() {
             </div>
             <Stars count={5} />
             <a
-              href="https://share.google/4WgUx0VlOZucwBqwb"
+              href={googleBusinessProfileUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="font-sans text-xs uppercase tracking-widest text-[#B8A080] hover:text-white transition-colors"

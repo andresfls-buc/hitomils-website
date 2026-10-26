@@ -4,6 +4,13 @@ import { defaultLandingLocale, landingPath } from '@/lib/landing'
 
 export default function WeddingLandingLink() {
   return (
+    <div className="space-y-4">
+      <p className="font-sans text-sm text-[#62504A]">
+        Planning in English?{' '}
+        <Link href={landingPath('en')} className="font-medium text-[#8B5E52] underline underline-offset-4 hover:text-[#6F463D]">
+          Explore wedding hair & makeup in Japan
+        </Link>.
+      </p>
     <Link
       href={landingPath(defaultLandingLocale)}
       data-wedding-landing-link
@@ -23,5 +30,6 @@ export default function WeddingLandingLink() {
         <ArrowUpRight size={16} aria-hidden="true" />
       </span>
     </Link>
+    </div>
   )
 }
