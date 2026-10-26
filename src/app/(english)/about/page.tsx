@@ -54,6 +54,11 @@ export default function AboutPage() {
             />
             <div className="mt-8 space-y-5 font-sans text-base text-[#7A7570] leading-relaxed font-light">
               <p>
+                I trained at Belle e Poque and have over 12 years of bridal
+                experience. I offer makeup and hairstyling for international
+                brides, with personal consultations in English and Japanese.
+              </p>
+              <p>
                 I&apos;m a bridal makeup artist and wedding hairstylist based in
                 beautiful city of Sapporo, Hokkaido. My passion for beauty began
                 at an early age when i used to be my only one client, I fell in

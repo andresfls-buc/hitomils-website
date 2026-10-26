@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { buildMetadata } from '@/lib/metadata'
 import PageHero from '@/components/ui/PageHero'
 import SectionTitle from '@/components/ui/SectionTitle'
@@ -9,9 +10,10 @@ import { Check } from 'lucide-react'
 import ServiceBookingButton from '@/components/services/ServiceBookingButton'
 import WeddingLandingLink from '@/components/services/WeddingLandingLink'
 import { siteUrl } from '@/lib/site'
+import { googleBusinessProfileUrl } from '@/lib/business'
 
 export const metadata: Metadata = buildMetadata({
-  title: { absolute: 'Bridal Hair & Makeup in Sapporo, Hokkaido | Hitomi' },
+  title: { absolute: 'English-Speaking Bridal Makeup & Hair in Sapporo | Hitomi' },
   description:
     'Bridal makeup and wedding hair in Sapporo, Hokkaido, Japan. Salon and hotel services, English consultations, and travel across Japan on request.',
   alternates: { canonical: `${siteUrl}/services` },
@@ -50,6 +52,33 @@ const serviceSchema = {
     },
   })),
 }
+
+const serviceFaqs = [
+  {
+    question: 'Can I plan my wedding hair and makeup in English?',
+    answer: 'Yes. I am Hitomi Landazabal, a bridal makeup artist and wedding hairstylist based in Sapporo, Hokkaido. We can discuss your look, schedule and booking in English or Japanese before you travel to Japan.',
+  },
+  {
+    question: 'Can you travel to my wedding venue in Japan?',
+    answer: 'I offer salon and hotel appointments in Sapporo. For Niseko, Lake Toya, other Hokkaido locations or elsewhere in Japan, send your date, venue and getting-ready address. Travel is available on request, subject to availability, with travel and accommodation costs discussed in your quote.',
+  },
+  {
+    question: 'Do you offer hair and makeup for pre-wedding photo shoots?',
+    answer: 'Yes. Send your shoot date, getting-ready address, locations, ready-by time and reference images so we can discuss styling and a quote. Photography, dress rental, transport and location arrangements are booked separately with your chosen providers.',
+  },
+  {
+    question: 'What is included in a bridal hair and makeup appointment?',
+    answer: 'Both bridal services include a pre-wedding consultation, skin preparation, bridal makeup including lashes, and hairstyling. Ask about a trial, a second look or touch-ups during your event when you enquire so we can discuss arrangements and any additional cost.',
+  },
+  {
+    question: 'How much does bridal hair and makeup cost in Sapporo?',
+    answer: `Salon bridal hair and makeup starts at ${services.find((service) => service.id === 'bridal-combo-salon')!.price}; hotel appointments start at ${services.find((service) => service.id === 'bridal-combo-hotel')!.price}, including travel within Sapporo city. These are starting prices, with your final quote confirmed after consultation. Early starts and travel outside Sapporo may cost extra.`,
+  },
+  {
+    question: 'How do I enquire from overseas?',
+    answer: 'Message @hitomi.l.s_sapporo on Instagram in English or Japanese. Include your date, city or venue, getting-ready address, the time you need to be ready and your preferred service. For bridal bookings, please enquire at least three months in advance to check availability.',
+  },
+]
 
 export default function ServicesPage() {
   const bridalServices = services.filter((s) => s.category === 'bridal')
@@ -183,6 +212,11 @@ export default function ServicesPage() {
                 arranged according to availability, with travel and
                 accommodation costs quoted separately.
               </p>
+              <p className="mt-4">
+                <Link href="/blog/hokkaido-winter-wedding-makeup-hair" className="text-[#8B5E52] underline underline-offset-4">
+                  Planning winter wedding makeup and hair for snow photographs
+                </Link>
+              </p>
             </div>
             <div>
               <h3 className="font-serif text-2xl text-[#2C2C2C] mb-4">Weddings elsewhere in Japan</h3>
@@ -273,6 +307,87 @@ export default function ServicesPage() {
                 </div>
               </div>
             </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section id="photography-dresses" className="py-20 md:py-24 px-6" aria-labelledby="mirada-services">
+        <div className="max-w-6xl mx-auto">
+          <Reveal>
+            <h2 id="mirada-services" className="font-serif text-3xl md:text-4xl font-light text-[#2C2C2C]">
+              Photography, films &amp; dress rental with Mirada
+            </h2>
+            <p className="mt-5 max-w-3xl font-sans text-sm text-[#7A7570] leading-relaxed">
+              For Sapporo and Hokkaido wedding plans, enquire directly with Mirada about photography, films and dress rental. Photography is also available across Japan. Confirm booking, availability and package details with Mirada. Hair and makeup appointments with Hitomi are arranged separately.
+            </p>
+          </Reveal>
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                title: 'Wedding-day photography',
+                description: 'Ceremony and reception photographs, from your vows to moments with family and friends.',
+                href: 'https://miradaphoto.com/wedding-day.html',
+              },
+              {
+                title: 'Pre-wedding & photo weddings',
+                description: 'Wedding portraits on a separate day, with location shoots in your chosen setting.',
+                href: 'https://miradaphoto.com/wedding-photo.html',
+              },
+              {
+                title: 'Couple photography',
+                description: 'Anniversary and casual sessions in your own clothes, centred on the two of you.',
+                href: 'https://miradaphoto.com/couple.html',
+              },
+              {
+                title: 'Location films',
+                description: 'Films that capture your movements, voices and the atmosphere of the location.',
+                href: 'https://miradaphoto.com/film.html',
+              },
+              {
+                title: 'Wedding dress rental',
+                description: 'Explore Mirada’s dress collection for wedding-day and pre-wedding rentals.',
+                href: 'https://miradaphoto.com/dress-rental.html',
+              },
+            ].map((service) => (
+              <a
+                key={service.href}
+                href={service.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block border border-[#EDD9D1] p-6 hover:border-[#C9A99A] transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8B5E52]"
+              >
+                <h3 className="font-serif text-xl text-[#2C2C2C]">{service.title}</h3>
+                <p className="mt-2 font-sans text-sm text-[#7A7570] leading-relaxed">{service.description}</p>
+              </a>
+            ))}
+          </div>
+          <div className="mt-8">
+            <Button href="https://miradaphoto.com" variant="ghost" size="md" external>
+              Explore Mirada photography &amp; dress rental
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 px-6 bg-white" aria-labelledby="service-questions">
+        <div className="max-w-4xl mx-auto">
+          <h2 id="service-questions" className="font-serif text-3xl md:text-4xl font-light text-[#2C2C2C]">
+            Questions about wedding hair & makeup in Japan
+          </h2>
+          <p className="mt-5 font-sans text-sm text-[#7A7570] leading-relaxed">
+            Explore my <Link href="/portfolio" className="text-[#8B5E52] underline underline-offset-4">bridal makeup and hairstyling portfolio</Link> and{' '}
+            <a href={googleBusinessProfileUrl} target="_blank" rel="noopener noreferrer" className="text-[#8B5E52] underline underline-offset-4">client reviews on Google</a>{' '}
+            as you plan your appointment.
+          </p>
+          <div className="mt-8 divide-y divide-[#EDD9D1] border-y border-[#EDD9D1]">
+            {serviceFaqs.map(({ question, answer }) => (
+              <details key={question} className="group py-5">
+                <summary className="cursor-pointer font-serif text-xl text-[#2C2C2C] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8B5E52]">
+                  {question}
+                </summary>
+                <p className="mt-4 font-sans text-sm text-[#7A7570] leading-relaxed">{answer}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>

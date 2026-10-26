@@ -32,6 +32,7 @@ export async function generateMetadata({
       title: post.title,
       description: post.description,
       publishedTime: post.date,
+      modifiedTime: post.updated ?? post.date,
       authors: ['Hitomi Landazabal'],
       tags: post.tags,
       images: [
@@ -66,7 +67,7 @@ export default async function BlogPostPage({
     description: post.description,
     image: `${siteUrl}/images/blog/${slug}.jpg`,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updated ?? post.date,
     author: {
       '@id': `${siteUrl}/#hitomi`,
       '@type': 'Person',
@@ -94,7 +95,7 @@ export default async function BlogPostPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema).replace(/</g, '\\u003c') }}
       />
 
       {/* Article Hero */}

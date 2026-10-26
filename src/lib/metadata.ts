@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import { siteUrl } from '@/lib/site'
 
 export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
-  return {
+  const defaults: Metadata = {
     metadataBase: new URL(siteUrl),
     title: {
       default: 'Bridal Makeup & Hair in Sapporo, Hokkaido, Japan | Hitomi',
-      template: '%s | Hitomi — Bridal Makeup & Hair',
+      template: '%s | Hitomi',
     },
     description:
       'English-speaking bridal makeup artist and wedding hairstylist in Sapporo, Hokkaido, Japan. Salon and hotel appointments, with Japan travel on request.',
@@ -42,6 +42,18 @@ export function buildMetadata(overrides: Partial<Metadata> = {}): Metadata {
       index: true,
       follow: true,
     },
+  }
+
+  return {
+    ...defaults,
     ...overrides,
+    // Pages often override only the social title or description. Keep the
+    // shared cover image unless a page explicitly replaces or removes it.
+    openGraph: overrides.openGraph === null
+      ? null
+      : { ...defaults.openGraph, ...overrides.openGraph },
+    twitter: overrides.twitter === null
+      ? null
+      : { ...defaults.twitter, ...overrides.twitter },
   }
 }
