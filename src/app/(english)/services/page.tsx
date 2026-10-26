@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { buildMetadata } from '@/lib/metadata'
 import PageHero from '@/components/ui/PageHero'
 import SectionTitle from '@/components/ui/SectionTitle'
@@ -314,6 +315,21 @@ export default function ServicesPage() {
       <section id="photography-dresses" className="py-20 md:py-24 px-6" aria-labelledby="mirada-services">
         <div className="max-w-6xl mx-auto">
           <Reveal>
+            <a
+              href="https://miradaphoto.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-8 inline-block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8B5E52]"
+            >
+              <Image
+                src="/brand/mirada-logo.svg"
+                alt="Mirada"
+                width={452}
+                height={149}
+                unoptimized
+                className="block h-auto w-44 sm:w-52"
+              />
+            </a>
             <h2 id="mirada-services" className="font-serif text-3xl md:text-4xl font-light text-[#2C2C2C]">
               Photography, films &amp; dress rental with Mirada
             </h2>
